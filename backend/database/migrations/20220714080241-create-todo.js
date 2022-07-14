@@ -1,4 +1,7 @@
 "use strict";
+
+const { uuid } = require("uuidv4");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Todos", {
@@ -6,7 +9,6 @@ module.exports = {
         primaryKey: true,
         allowNull: false,
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
       },
       userID: {
         type: Sequelize.UUID,
@@ -16,12 +18,14 @@ module.exports = {
           },
           key: "id",
         },
+        allowNull: false,
       },
       content: {
         type: Sequelize.STRING,
       },
       status: {
         type: Sequelize.ENUM(["INPROGRESS", "COMPLETED"]),
+        defaultValue: "INPROGRESS"
       },
       category: {
         type: Sequelize.ENUM(["WORK", "PERSONAL"]),
@@ -33,7 +37,7 @@ module.exports = {
         type: Sequelize.ENUM(["LOW", "MEDIUM", "HIGH", "URGENT"]),
       },
       dueDate: {
-        type: Sequelize.TIME,
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,

@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { uuid } = require("uuidv4");
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
     /**
@@ -17,15 +18,19 @@ module.exports = (sequelize, DataTypes) => {
       content: DataTypes.STRING,
       status: DataTypes.ENUM(["INPROGRESS", "COMPLETED"]),
       category: DataTypes.ENUM(["WORK", "PERSONAL"]),
-      deletedAt: DataTypes.TIME,
-      priority: DataTypes.ENUMENUM(["LOW", "MEDIUM", "HIGH", "URGENT"]),
-      dueDate: DataTypes.TIME,
+      deletedAt: DataTypes.DATE,
+      priority: DataTypes.ENUM(["LOW", "MEDIUM", "HIGH", "URGENT"]),
+      dueDate: DataTypes.DATE,
     },
     {
       sequelize,
       modelName: "Todo",
     }
   );
+  Todo.beforeCreate(todo => {
+    todo.id = uuid();
+    todo.createdAt = new Date();
+  });
   return Todo;
 };
 
