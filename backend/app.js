@@ -3,6 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const { Client } = require("pg");
 
 var todosRouter = require("./routes/todos");
 var usersRouter = require("./routes/users");
