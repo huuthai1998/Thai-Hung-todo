@@ -1,6 +1,5 @@
 var express = require("express");
-const { Pool } = require("pg");
-const { signUp } = require("../services/usersServices");
+const { signUp } = require("../controllers/user.controller");
 var router = express.Router();
 
 /* GET user's detail. */
