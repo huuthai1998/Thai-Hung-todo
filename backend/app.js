@@ -3,6 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("./config/morganMiddleware");
+require("dotenv").config();
 
 var todoRouter = require("./routes/todo");
 var userRouter = require("./routes/user");

@@ -1,29 +1,16 @@
 var express = require("express");
-const { signUp } = require("../controllers/user.controller");
 var router = express.Router();
+var user_controller = require("../controllers/user.controller");
+const { isAuthenticate } = require("../utils/jwt");
 
 /* GET user's detail. */
-router.get("/", async function (req, res, next) {
-  res.render("index", { title: "Express" });
-});
+router.get("/", isAuthenticate, user_controller.get_user);
 
-router.post("/login", async function (req, res, next) {
-  const { username, password, email } = req.body;
+router.post("/login", user_controller.sign_in);
 
-  res.render("index", { title: "Express" });
-});
-
-router.post("/signup", async function (req, res, next) {
-  const { username, password } = req.body;
-  await signUp(username, password);
-  res.send("SUCCESS");
-});
+router.post("/signUp", user_controller.sign_up);
 
 /* Change user's information. */
-router.put("/", function (req, res, next) {
-  const { username, avatar } = req.body;
-
-  res.render("index", { title: "Express" });
-});
+router.put("/", isAuthenticate, user_controller.edit_user);
 
 module.exports = router;

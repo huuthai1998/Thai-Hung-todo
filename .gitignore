@@ -7,6 +7,6 @@ package-lock.json
 # Coveralls
 .nyc_output
 coverage
-
+.env
 # MacOS
 .DS_Store
