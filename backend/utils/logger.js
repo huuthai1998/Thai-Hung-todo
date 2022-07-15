@@ -33,7 +33,8 @@ const formatConsole = winston.format.combine(
   winston.format.colorize({ all: true }),
   winston.format.printf(
     (info) => {
-      if (info.stack) return `${info.label} ${info.timestamp}  ${info.level}: ${info.message} \n Error Stack: ${info.stack}`;
+      if (info.stack) 
+        return `${info.label} ${info.timestamp}  ${info.level}: ${info.message} \n Error Stack: ${info.stack}`;
       return `${info.label} ${info.timestamp}  ${info.level}: ${info.message}`;
     }
   )
@@ -64,6 +65,7 @@ const transports = [
 const logger = winston.createLogger({
   level: level(),
   levels,
+  format: format.errors({ stack: true }),
   transports,
 });
 
