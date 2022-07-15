@@ -8,5 +8,6 @@ package-lock.json
 .nyc_output
 coverage
 .env
+
 # MacOS
 .DS_Store
