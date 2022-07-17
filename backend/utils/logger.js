@@ -65,7 +65,7 @@ const transports = [
 const logger = winston.createLogger({
   level: level(),
   levels,
-  format: format.errors({ stack: true }),
+  format: winston.format.errors({ stack: true }),
   transports,
 });
 
