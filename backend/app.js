@@ -14,7 +14,9 @@ app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+var cors = require("cors");
 
+app.use(cors());
 app.use("/todo", todoRouter);
 app.use("/user", userRouter);
 
