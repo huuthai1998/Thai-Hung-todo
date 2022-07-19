@@ -12,11 +12,10 @@ axios.defaults.baseURL = "http://localhost:5001/";
 axios.defaults.headers.common.accept = "application/json";
 
 const App = () => {
-  const { token, setToken } = useTodoContext();
+  const { authContext, setToken } = useTodoContext();
   useEffect(() => {
-    console.log(token);
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
-  }, [token]);
+    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+  }, [authContext.token]);
 
   const fakeSignIn = async () => {
     const { data } = await axios.post("/user/login", {
@@ -25,6 +24,7 @@ const App = () => {
     });
     setToken(data.token);
   };
+
   useEffect(() => {
     fakeSignIn();
   }, []);

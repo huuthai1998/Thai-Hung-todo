@@ -3,14 +3,14 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { PostProvider } from "./contexts/store";
+import { AuthProvider } from "./contexts/store";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <PostProvider>
+    <AuthProvider>
       <App />
-    </PostProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 
