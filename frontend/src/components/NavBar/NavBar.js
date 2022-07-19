@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useTodoContext } from "../../contexts/store";
+import { useAuthContext } from "../../contexts/authStore";
 import Avatar from "../../assets/rose.webp";
 import "./NavBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,7 +36,7 @@ const menu = (
 );
 
 export default function NavBar() {
-  const { authContext } = useTodoContext();
+  const { authContext } = useAuthContext();
 
   return (
     <div className="navbar-wrapper bg-red-500">
@@ -55,7 +55,7 @@ export default function NavBar() {
             <img
               src={Avatar}
               alt="User Avatar"
-              className="rounded-full h-10 w-10"
+              className="rounded-full h-10 w-10 object-cover"
             />
           </div>
           <Dropdown overlay={menu} placement="bottomRight">
