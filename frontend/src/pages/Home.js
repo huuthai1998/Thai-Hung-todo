@@ -4,6 +4,7 @@ import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useAuthContext } from "../contexts/authStore";
 import NavBar from "../components/NavBar/NavBar";
+import Sidebar from "../components/Sidebar/Sidebar";
 
 export default function Home() {
   const [todos, setTodos] = useState([]);
@@ -26,6 +27,7 @@ export default function Home() {
   return (
     <div>
       <NavBar />
+      <Sidebar />
       <FontAwesomeIcon icon={faCoffee} />
       Home
     </div>
