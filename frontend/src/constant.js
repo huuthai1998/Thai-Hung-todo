@@ -1,5 +1,7 @@
 const ADD_FAVORITE = "ADD_FAVORITE";
 const REMOVE_FAVORITE = "REMOVE_FAVORITE";
+const LOG_IN = "LOG_IN";
+const SIGN_UP = "SIGN_UP";
 const SET_TOKEN = "SET_TOKEN";
 const SET_TODOS = "SET_TODOS";
 const ADD_TODOS = "ADD_TODOS";
@@ -32,4 +34,6 @@ export {
   ADD_TODOS,
   DELETE_TODOS,
   EDIT_TODOS,
+  LOG_IN,
+  SIGN_UP,
 };

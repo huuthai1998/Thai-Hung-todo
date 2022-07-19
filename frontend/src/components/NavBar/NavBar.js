@@ -7,8 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Button, Dropdown, Menu, Space } from "antd";
 import "antd/dist/antd.css";
+import { useNavigate } from "react-router";
 
-const menu = (
+const menu = (handleLogout) => (
   <Menu
     items={[
       {
@@ -22,32 +23,33 @@ const menu = (
       },
       {
         key: "2",
-        label: (
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.aliyun.com"
-          >
-            Log out
-          </a>
-        ),
+        label: <div onClick={handleLogout}>Log out</div>,
       },
     ]}
   />
 );
-
 export default function NavBar() {
-  const { authContext } = useAuthContext();
+  const { authContext, setToken } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setToken("");
+    navigate("/login");
+  };
 
   return (
     <div className="navbar-wrapper bg-red-500">
       <div className="navbar-logo text-3xl font-bold underline text-red-500">
         <img src={Logo} alt="logo" />
       </div>
-      {!authContext.token.length > 0 ? (
+      {!authContext?.token.length > 0 ? (
         <div className="buttons-wrapper">
-          <button className="login">Log in</button>
-          <button className="signup">Sign up</button>
+          <button className="login" onClick={() => navigate("/login")}>
+            Log in
+          </button>
+          <button className="signup" onClick={() => navigate("/signup")}>
+            Sign up
+          </button>
         </div>
       ) : (
         <div className="flex items-center mr-[40px] relative">
@@ -59,7 +61,7 @@ export default function NavBar() {
               className="rounded-full h-10 w-10 object-cover"
             />
           </div>
-          <Dropdown overlay={menu} placement="bottomRight">
+          <Dropdown overlay={menu(handleLogout)} placement="bottomRight">
             <FontAwesomeIcon icon={faChevronDown} color="rgba(0, 0, 0, 0.54)" />
           </Dropdown>
         </div>
