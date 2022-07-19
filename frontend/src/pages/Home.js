@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { useTodoContext } from "../contexts/store";
+import { useAuthContext } from "../contexts/authStore";
 import NavBar from "../components/NavBar/NavBar";
 
 export default function Home() {
   const [todos, setTodos] = useState([]);
-  const { authContext } = useTodoContext();
+  const { authContext } = useAuthContext();
 
   const fetchTodos = async () => {
     try {

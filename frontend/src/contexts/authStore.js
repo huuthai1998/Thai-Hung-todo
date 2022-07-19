@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import { ADD_FAVORITE, REMOVE_FAVORITE, SET_TOKEN } from "../constant";
+import { SET_TOKEN } from "../constant";
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -18,27 +18,11 @@ const initialState = {
 };
 const AuthContext = React.createContext({
   authContext: initialState,
-  addFavorite: () => {},
-  removeFavorite: () => {},
   setToken: () => {},
 });
 
 export const AuthProvider = (props) => {
-  const [postContext, dispatch] = useReducer(authReducer, initialState);
-
-  const addFavorite = (id) => {
-    dispatch({
-      type: ADD_FAVORITE,
-      payload: { id },
-    });
-  };
-
-  const removeFavorite = (id) => {
-    dispatch({
-      type: REMOVE_FAVORITE,
-      payload: { id },
-    });
-  };
+  const [authContext, dispatch] = useReducer(authReducer, initialState);
 
   const setToken = (token) => {
     dispatch({
@@ -50,9 +34,7 @@ export const AuthProvider = (props) => {
   return (
     <AuthContext.Provider
       value={{
-        authContext: postContext,
-        addFavorite,
-        removeFavorite,
+        authContext: authContext,
         setToken,
       }}
     >
@@ -61,4 +43,4 @@ export const AuthProvider = (props) => {
   );
 };
 
-export const useTodoContext = () => React.useContext(AuthContext);
+export const useAuthContext = () => React.useContext(AuthContext);
