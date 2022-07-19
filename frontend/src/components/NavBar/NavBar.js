@@ -44,7 +44,7 @@ export default function NavBar() {
       <div className="navbar-logo text-3xl font-bold underline text-red-500">
         <img src={Logo} alt="logo" />
       </div>
-      {authContext.token ? (
+      {!authContext.token.length > 0 ? (
         <div className="buttons-wrapper">
           <button className="login">Log in</button>
           <button className="signup">Sign up</button>

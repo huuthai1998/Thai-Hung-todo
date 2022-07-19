@@ -5,14 +5,17 @@ const todoReducer = (state, action) => {
   switch (action.type) {
     case SET_TODOS:
       return {
+        ...state,
         todos: action.payload.todos,
       };
     case ADD_TODOS:
       return {
+        ...state,
         todos: [...action.payload.todo, state.todos],
       };
     case DELETE_TODOS:
       return {
+        ...state,
         todos: state.todos.filter((todo) => todo.id !== action.payload.id),
       };
     case EDIT_TODOS:
@@ -21,6 +24,7 @@ const todoReducer = (state, action) => {
       const findIdx = temp.findIndex((todo) => (todo.id = updatedTodo.id));
       temp[findIdx] = updatedTodo;
       return {
+        ...state,
         todos: temp,
       };
     default:
@@ -30,6 +34,7 @@ const todoReducer = (state, action) => {
 
 const initialState = {
   todos: [],
+  isLoading: false,
 };
 const TodoContext = React.createContext({
   todoContext: initialState,
