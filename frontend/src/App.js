@@ -1,7 +1,7 @@
 import "./App.css";
 
 import { Route, BrowserRouter, Routes } from "react-router-dom";
-import { useTodoContext } from "./contexts/store";
+import { useAuthContext } from "./contexts/authStore";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -12,19 +12,23 @@ axios.defaults.baseURL = "http://localhost:5001/";
 axios.defaults.headers.common.accept = "application/json";
 
 const App = () => {
-  const { token, setToken } = useTodoContext();
+  const { authContext, setToken } = useAuthContext();
   useEffect(() => {
-    console.log(token);
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
-  }, [token]);
+    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+  }, [authContext.token]);
 
   const fakeSignIn = async () => {
-    const { data } = await axios.post("/user/login", {
-      email: "dev2f@gmail.com",
-      password: "thisisnothash",
-    });
-    setToken(data.token);
+    try {
+      const { data } = await axios.post("/user/login", {
+        email: "dev2f@gmail.com",
+        password: "thisisnothash",
+      });
+      setToken(data.token);
+    } catch (err) {
+      console.log(err);
+    }
   };
+
   useEffect(() => {
     fakeSignIn();
   }, []);

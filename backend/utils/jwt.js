@@ -14,7 +14,7 @@ const isAuthenticate = async (req, res, next) => {
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
       res.locals.email = decodedToken.email;
       next();
-    } catch(err) {
+    } catch (err) {
       logger.error(err);
       return res.status(401).send({ message: "Invalid token" });
     }
