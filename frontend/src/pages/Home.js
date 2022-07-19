@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoffee } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { useAuthContext } from "../contexts/authStore";
 import NavBar from "../components/NavBar/NavBar";
 import Sidebar from "../components/Sidebar/Sidebar";
+import TodoCard from "../components/TodoCard/TodoCard";
+import axios from "axios";
 
 export default function Home() {
   const [todos, setTodos] = useState([]);
@@ -27,9 +26,28 @@ export default function Home() {
   return (
     <div>
       <NavBar />
-      <Sidebar />
-      <FontAwesomeIcon icon={faCoffee} />
-      Home
+      <div className="flex">
+        <Sidebar/>
+        <div className="w-full ml-16 py-6">
+          <h1>Home</h1>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+          <TodoCard isCompeleted={false}/>
+          <br/>
+        </div>
+      </div>
     </div>
   );
 }

@@ -18,11 +18,15 @@ const App = () => {
   }, [authContext.token]);
 
   const fakeSignIn = async () => {
-    const { data } = await axios.post("/user/login", {
-      email: "dev2f@gmail.com",
-      password: "thisisnothash",
-    });
-    setToken(data.token);
+    try {
+      const { data } = await axios.post("/user/login", {
+        email: "dev2f@gmail.com",
+        password: "thisisnothash",
+      });
+      setToken(data.token);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {

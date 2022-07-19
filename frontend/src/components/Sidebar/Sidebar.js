@@ -1,34 +1,33 @@
-import React, { useEffect } from "react";
-import { Menu } from "antd";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import "antd/dist/antd.css";
-import Sider from "antd/lib/layout/Sider";
-import { BorderOutlined, CheckSquareOutlined } from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarCheck, faCalendarMinus } from "@fortawesome/free-regular-svg-icons";
+
 
 export default function Sidebar() {
   const navigate = useNavigate();
   return (
-    <Sider trigger={null} className="fixed top-24">
-      <div className="logo" />
-      <Menu
-        theme="light"
-        mode="inline"
-        defaultSelectedKeys={["1"]}
-        items={[
-          {
-            key: "1",
-            icon: <BorderOutlined />,
-            label: "In progress",
-            onClick: () => navigate("?filter=pending"),
-          },
-          {
-            key: "2",
-            icon: <CheckSquareOutlined />,
-            label: "Completed",
-            onClick: () => navigate("?filter=completed"),
-          },
-        ]}
-      />
-    </Sider>
+    <aside className="w-64 bg-[#FAFAFA] overscoll-y-auto">
+      <ul class="space-y-2">
+        <li>
+          <button
+            class="w-full flex items-center py-3 pl-[41px] my-4 text-base font-medium bg-gray-100 hover:bg-gray-200"
+            onClick={() => navigate("/?filter=inprogress")}
+          >
+            <FontAwesomeIcon icon={faCalendarMinus} size="lg" className="text-blue"/>
+            <span class="ml-3">In progress</span>
+          </button>
+        </li>
+        <li>
+          <button 
+            class="w-full flex items-center py-3 pl-[41px] my-4 text-base font-medium hover:bg-gray-200"
+            onClick={() => navigate("?filter=completed")}
+          >
+            <FontAwesomeIcon icon={faCalendarCheck} size="lg" className="text-completed-400"/>
+            <span class="ml-3">Completed</span>
+          </button>
+        </li>
+      </ul>
+    </aside>
   );
 }
