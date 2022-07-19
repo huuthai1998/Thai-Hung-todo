@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useAuthContext } from "../../contexts/authStore";
 import Avatar from "../../assets/rose.webp";
+import Logo from "../../assets/Logo.png";
 import "./NavBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +42,7 @@ export default function NavBar() {
   return (
     <div className="navbar-wrapper bg-red-500">
       <div className="navbar-logo text-3xl font-bold underline text-red-500">
-        LOGGO
+        <img src={Logo} alt="logo" />
       </div>
       {authContext.token ? (
         <div className="buttons-wrapper">
