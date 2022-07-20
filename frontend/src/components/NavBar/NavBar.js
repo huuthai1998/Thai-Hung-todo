@@ -65,7 +65,7 @@ export default function NavBar() {
         <img src={Logo} alt="logo" width="160px" height="55px" />
       </div>
 
-      {authContext.token ? (
+      {!authContext.token ? (
         <div className="flex justify-end items-center">
           <button
             onClick={() => navigate("/login")}

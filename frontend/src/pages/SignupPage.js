@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import InputBox from "../components/InputBox/InputBox";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAuthContext } from "../contexts/authStore";
-import axios from "axios";
 import { useNavigate } from "react-router";
+import axios from "axios";
+import InputBox from "../components/InputBox/InputBox";
+import NavBar from "../components/NavBar/NavBar";
 
 export default function SignupPage() {
   const [info, setInfo] = useState({});
@@ -33,45 +34,48 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="h-screen items-center flex justify-center align-middle w-screen">
-      <form action="submit" className="loginBox w-[450px]">
-        <h1 className="font-sans font-bold text-center mb-8 text-3xl">
-          CREATE AN ACCOUNT
-        </h1>
-        <InputBox
-          name="username"
-          placeholder={"Username"}
-          icon={faUser}
-          onChangeHandler={onChangeHandler}
-        />
-        <InputBox
-          name="email"
-          placeholder={"Email"}
-          icon={faEnvelope}
-          onChangeHandler={onChangeHandler}
-        />
-        <InputBox
-          type="password"
-          name="password"
-          placeholder={"Password"}
-          icon={faLock}
-          onChangeHandler={onChangeHandler}
-        />
-        <InputBox
-          type="password"
-          name="confirmPassword"
-          placeholder={"Confirm password"}
-          icon={faLock}
-          onChangeHandler={onChangeHandler}
-        />
-        {error.length > 0 && <div className="text-red-400 mb-5">{error}</div>}
-        <button
-          onClick={submitHandler}
-          className="cursor text-center bg-[#DB4C3F] w-full py-3 rounded-md text-white text-xl"
-        >
-          Register
-        </button>
-      </form>
+    <div>
+      <NavBar />
+      <div className="flex justify-center mt-32">
+        <form action="submit" className="loginBox w-[450px]">
+          <h1 className="font-sans font-bold text-center mb-10 text-3xl">
+            CREATE AN ACCOUNT
+          </h1>
+          <InputBox
+            name="username"
+            placeholder={"Username"}
+            icon={faUser}
+            onChangeHandler={onChangeHandler}
+          />
+          <InputBox
+            name="email"
+            placeholder={"Email"}
+            icon={faEnvelope}
+            onChangeHandler={onChangeHandler}
+          />
+          <InputBox
+            type="password"
+            name="password"
+            placeholder={"Password"}
+            icon={faLock}
+            onChangeHandler={onChangeHandler}
+          />
+          <InputBox
+            type="password"
+            name="confirmPassword"
+            placeholder={"Confirm password"}
+            icon={faLock}
+            onChangeHandler={onChangeHandler}
+          />
+          {error.length > 0 && <div className="text-red-400 mb-5">{error}</div>}
+          <button
+            onClick={submitHandler}
+            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg  bg-red text-white"
+          >
+            Register
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

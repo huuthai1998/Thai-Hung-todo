@@ -1,7 +1,6 @@
 import React, { createRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./InputBox.css";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 
 export default function InputBox({
   type,
@@ -18,21 +17,21 @@ export default function InputBox({
   };
 
   return (
-    <div className="flex border inputWrapper items-center mb-4 focus-within:border-blue-300">
-      <FontAwesomeIcon icon={icon} className="ml-[30px]" />
+    <div className="flex border items-center mb-5 rounded-md">
+      <FontAwesomeIcon icon={icon} className="ml-7 text-gray-500" />
       <input
         ref={inputRef}
         type={type || " text"}
         name={name}
         onChange={onChangeHandler}
-        className="ml-5 py-[12px] focus:outline-none flex-1 pr-5"
+        className="ml-7 py-3 focus:outline-none flex-1 pr-5 font-medium text-base"
         placeholder={placeholder}
       />
       {type && (
         <FontAwesomeIcon
           onClick={onShowPassword}
           icon={!showPassword ? faEye : faEyeSlash}
-          className="mr-[30px] cursor-pointer"
+          className="mr-7 cursor-pointer text-gray-500"
         />
       )}
     </div>
