@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import { SET_TOKEN } from "../constant";
+import { LOG_IN, SET_TOKEN } from "../constant";
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -15,6 +15,7 @@ const authReducer = (state, action) => {
 
 const initialState = {
   token: "",
+  isLoading: false,
 };
 const AuthContext = React.createContext({
   authContext: initialState,

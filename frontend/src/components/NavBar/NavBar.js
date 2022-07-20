@@ -9,14 +9,21 @@ import { Dropdown, Menu } from "antd";
 import { useAuthContext } from "../../contexts/authStore";
 import Avatar from "../../assets/rose.webp";
 import Logo from "../../assets/Logo.png";
+import "antd/dist/antd.css";
+import { useNavigate } from "react-router";
 
-const menu = (
+const menu = (handleLogout) => (
   <Menu
     items={[
       {
         key: "1",
         label: (
-          <a target="_blank" rel="noopener noreferrer" href="/" className="text-base p-4">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="/"
+            className="text-base p-4"
+          >
             <FontAwesomeIcon
               icon={faUserCircle}
               className="mr-2 text-gray-600"
@@ -31,33 +38,45 @@ const menu = (
       {
         key: "2",
         label: (
-          <a target="_blank" rel="noopener noreferrer" href="/" className="text-base p-4">
+          <div onClick={handleLogout} className="text-base p-4">
             <FontAwesomeIcon
               icon={faSignOutAlt}
               className="mr-2 text-gray-600"
             />
             Log out
-          </a>
+          </div>
         ),
       },
     ]}
   />
 );
-
 export default function NavBar() {
-  const { authContext } = useAuthContext();
+  const { authContext, setToken } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setToken("");
+    navigate("/login");
+  };
 
   return (
     <nav className="flex justify-between h-[70px] items-center px-10 border-b border-gray-200">
       <div>
         <img src={Logo} alt="logo" width="160px" height="55px" />
       </div>
+
       {authContext.token ? (
         <div className="flex justify-end items-center">
-          <button className="font-semibold text-lg border-b border-gray-200 rounded-md py-1 px-7 bg-gray-200 text-black">
+          <button
+            onClick={() => navigate("/login")}
+            className="font-semibold text-lg border-b border-gray-200 rounded-md py-1 px-7 bg-gray-200 text-black"
+          >
             Log in
           </button>
-          <button className="font-semibold text-lg border-b border-red rounded-md py-1 px-7 ml-7 bg-red text-white">
+          <button
+            onClick={() => navigate("/signup")}
+            className="font-semibold text-lg border-b border-red rounded-md py-1 px-7 ml-7 bg-red text-white"
+          >
             Sign up
           </button>
         </div>
@@ -71,7 +90,7 @@ export default function NavBar() {
               className="rounded-full h-10 w-10 object-cover"
             />
           </div>
-          <Dropdown overlay={menu} placement="bottomRight">
+          <Dropdown overlay={menu(handleLogout)} placement="bottomRight">
             <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
           </Dropdown>
         </div>
