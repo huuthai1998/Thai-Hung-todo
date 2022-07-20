@@ -3,6 +3,7 @@ import "./App.css";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import { useAuthContext } from "./contexts/authStore";
 import Home from "./pages/Home";
+import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import axios from "axios";
@@ -36,6 +37,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/welcome" element={<WelcomePage />}></Route>
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
