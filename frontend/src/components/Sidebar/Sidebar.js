@@ -7,7 +7,7 @@ import { faCalendarCheck, faCalendarMinus } from "@fortawesome/free-regular-svg-
 export default function Sidebar() {
   const navigate = useNavigate();
   return (
-    <aside className="w-64 bg-[#FAFAFA] overscoll-y-auto">
+    <aside className="w-64 bg-[#FAFAFA] min-h-screen">
       <ul class="space-y-2">
         <li>
           <button
