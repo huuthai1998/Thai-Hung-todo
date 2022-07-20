@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronDown,
+  faUserCircle,
+  faSignOutAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { Dropdown, Menu } from "antd";
 import { useAuthContext } from "../../contexts/authStore";
 import Avatar from "../../assets/rose.webp";
 import Logo from "../../assets/Logo.png";
-import "./NavBar.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faUser } from "@fortawesome/free-solid-svg-icons";
-import { Button, Dropdown, Menu, Space } from "antd";
 import "antd/dist/antd.css";
 import { useNavigate } from "react-router";
 
@@ -15,15 +18,34 @@ const menu = (handleLogout) => (
       {
         key: "1",
         label: (
-          <div>
-            <FontAwesomeIcon icon="fa-solid fa-user" />
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="/"
+            className="text-base p-4"
+          >
+            <FontAwesomeIcon
+              icon={faUserCircle}
+              className="mr-2 text-gray-600"
+            />
             Details
-          </div>
+          </a>
         ),
       },
       {
+        type: "divider",
+      },
+      {
         key: "2",
-        label: <div onClick={handleLogout}>Log out</div>,
+        label: (
+          <div onClick={handleLogout} className="text-base p-4">
+            <FontAwesomeIcon
+              icon={faSignOutAlt}
+              className="mr-2 text-gray-600"
+            />
+            Log out
+          </div>
+        ),
       },
     ]}
   />
@@ -38,22 +60,29 @@ export default function NavBar() {
   };
 
   return (
-    <div className="navbar-wrapper bg-red-500">
-      <div className="navbar-logo text-3xl font-bold underline text-red-500">
-        <img src={Logo} alt="logo" />
+    <nav className="flex justify-between h-[70px] items-center px-10 border-b border-gray-200">
+      <div>
+        <img src={Logo} alt="logo" width="160px" height="55px" />
       </div>
-      {!authContext?.token.length > 0 ? (
-        <div className="buttons-wrapper">
-          <button className="login" onClick={() => navigate("/login")}>
+
+      {authContext.token ? (
+        <div className="flex justify-end items-center">
+          <button
+            onClick={() => navigate("/login")}
+            className="font-semibold text-lg border-b border-gray-200 rounded-md py-1 px-7 bg-gray-200 text-black"
+          >
             Log in
           </button>
-          <button className="signup" onClick={() => navigate("/signup")}>
+          <button
+            onClick={() => navigate("/signup")}
+            className="font-semibold text-lg border-b border-red rounded-md py-1 px-7 ml-7 bg-red text-white"
+          >
             Sign up
           </button>
         </div>
       ) : (
-        <div className="flex items-center mr-[40px] relative">
-          <div className="mr-5 font-semibold">Han Jisoo</div>
+        <div className="flex items-center relative">
+          <div className="mr-3 font-semibold">Han Jisoo</div>
           <div className="rounded-full h-10 w-10 mr-2">
             <img
               src={Avatar}
@@ -62,10 +91,10 @@ export default function NavBar() {
             />
           </div>
           <Dropdown overlay={menu(handleLogout)} placement="bottomRight">
-            <FontAwesomeIcon icon={faChevronDown} color="rgba(0, 0, 0, 0.54)" />
+            <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
           </Dropdown>
         </div>
       )}
-    </div>
+    </nav>
   );
 }
