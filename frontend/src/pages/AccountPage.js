@@ -59,7 +59,8 @@ export default function AccountPage() {
     setInfo({ ...info, [name]: value });
   };
 
-  const updateUsername = async () => {
+  const updateUsername = async (e) => {
+    e.preventDefault();
     try {
       await axios.put("/user", { username: info.username });
       alert("Successfully changed your user name");
@@ -68,8 +69,16 @@ export default function AccountPage() {
     }
   };
 
-  const changePassword = async () => {
+  const changePassword = async (e) => {
+    e.preventDefault();
     try {
+      if (
+        !info.oldPassword ||
+        info.newPassword ||
+        info.oldPassword?.length === 0 ||
+        info.newPassword?.length === 0
+      )
+        throw Error(`Please input your password`);
       if (info.confirmPassword !== info.newPassword)
         throw Error(`Passwords don't match`);
       await axios.put("/user", {
@@ -78,7 +87,7 @@ export default function AccountPage() {
       });
       alert("Successfully changed your password");
     } catch (err) {
-      alert(err.response.data.message || err.message);
+      alert(err.response?.data?.message || err.message);
     }
   };
 
