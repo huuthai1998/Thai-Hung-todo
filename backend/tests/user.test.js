@@ -12,7 +12,7 @@ describe("User endpoints test", () => {
       username: "testuser1",
     });
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty("message");
+    expect(res.body).toHaveProperty("token");
   });
 
   it("should test unsuccess sign up due to taken email", async () => {

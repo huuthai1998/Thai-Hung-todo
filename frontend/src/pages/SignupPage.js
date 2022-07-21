@@ -24,7 +24,9 @@ export default function SignupPage() {
       const { data } = await axios.post("/user/signup", {
         email: info.email,
         password: info.password,
+        username: info.username,
       });
+      console.log(data);
       setToken(data.token);
       axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
       navigate("/");

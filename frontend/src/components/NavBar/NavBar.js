@@ -11,6 +11,7 @@ import Avatar from "../../assets/rose.webp";
 import Logo from "../../assets/Logo.png";
 import "antd/dist/antd.css";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 const menu = (handleLogout) => (
   <Menu
@@ -18,18 +19,13 @@ const menu = (handleLogout) => (
       {
         key: "1",
         label: (
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="/"
-            className="text-base p-4"
-          >
+          <Link to="/account" className="text-base p-4">
             <FontAwesomeIcon
               icon={faUserCircle}
               className="mr-2 text-gray-600"
             />
             Details
-          </a>
+          </Link>
         ),
       },
       {
@@ -38,7 +34,7 @@ const menu = (handleLogout) => (
       {
         key: "2",
         label: (
-          <div onClick={handleLogout} className="text-base p-4">
+          <div onClick={handleLogout} className="text-base px-4">
             <FontAwesomeIcon
               icon={faSignOutAlt}
               className="mr-2 text-gray-600"
@@ -82,7 +78,7 @@ export default function NavBar() {
         </div>
       ) : (
         <div className="flex items-center relative">
-          <div className="mr-3 font-semibold">Han Jisoo</div>
+          <div className="mr-3 font-semibold">{authContext.user?.username}</div>
           <div className="rounded-full h-10 w-10 mr-2">
             <img
               src={Avatar}
@@ -90,7 +86,11 @@ export default function NavBar() {
               className="rounded-full h-10 w-10 object-cover"
             />
           </div>
-          <Dropdown overlay={menu(handleLogout)} placement="bottomRight">
+          <Dropdown
+            overlay={menu(handleLogout)}
+            placement="bottomRight"
+            className="cursor-pointer"
+          >
             <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
           </Dropdown>
         </div>

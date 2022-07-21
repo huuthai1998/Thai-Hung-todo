@@ -8,30 +8,33 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import axios from "axios";
 import { useEffect } from "react";
+import AccountPage from "./pages/AccountPage";
+import Cookies from "js-cookie";
+import { SET_TOKEN } from "./constant";
 
 axios.defaults.baseURL = "http://localhost:5001/";
 axios.defaults.headers.common.accept = "application/json";
 
 const App = () => {
-  const { authContext, setToken } = useAuthContext();
+  const { authContext, setUser, setToken } = useAuthContext();
+
   useEffect(() => {
     axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+    if (authContext.token.length > 0) fetchUserInfo();
   }, [authContext.token]);
 
-  const fakeSignIn = async () => {
+  const fetchUserInfo = async () => {
     try {
-      const { data } = await axios.post("/user/login", {
-        email: "dev2f@gmail.com",
-        password: "thisisnothash",
-      });
-      setToken(data.token);
+      const { data } = await axios.get("/user");
+      setUser(data.user);
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data.message);
     }
   };
 
   useEffect(() => {
-    fakeSignIn();
+    const token = Cookies.get("token");
+    setToken(token);
   }, []);
 
   return (
@@ -41,6 +44,7 @@ const App = () => {
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
+        <Route path="/account" element={<AccountPage />}></Route>
       </Routes>
     </BrowserRouter>
   );
