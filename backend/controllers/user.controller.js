@@ -9,7 +9,7 @@ exports.sign_in = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findByPk(email);
-    if (!user) throw new Error("Email is incorrect")
+    if (!user) throw new Error("Email is incorrect");
     const passwordIsMatch = await bcrypt.compare(password, user.password);
     if (!passwordIsMatch) throw new Error("Password is incorrect");
     const token = signToken(email);
@@ -33,7 +33,8 @@ exports.sign_up = async (req, res, next) => {
         username,
         password: hashPassword,
       });
-      res.status(200).send({ message: "Sign up successfully" });
+      const token = signToken(email);
+      res.status(200).send({ token });
     }
   } catch (err) {
     logger.error(err);
@@ -56,11 +57,20 @@ exports.get_user = async (req, res, next) => {
 
 exports.edit_user = async (req, res, next) => {
   try {
-    const { username, avatar } = req.body;
+    const { username, avatar, newPassword, oldPassword } = req.body;
     const { email } = res.locals;
     const user = await User.findByPk(email);
     if (!user) throw new Error("User does not exist");
-    user.username = username;
+
+    if (newPassword) {
+      const passwordIsMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!passwordIsMatch)
+        return res.status(403).send({ message: "Password is incorrect" });
+      const hashPassword = await bcrypt.hash(newPassword, saltRounds);
+      user.password = hashPassword;
+    }
+
+    user.username = username || user.username;
     user.avatar = avatar || user.avatar;
     await user.save();
     res.status(200).send({

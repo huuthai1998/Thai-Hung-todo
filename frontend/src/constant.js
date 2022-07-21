@@ -5,6 +5,7 @@ const SET_TODOS = "SET_TODOS";
 const ADD_TODOS = "ADD_TODOS";
 const DELETE_TODOS = "DELETE_TODOS";
 const EDIT_TODOS = "EDIT_TODOS";
+const SET_USER = "SET_USER";
 const COLORS = {
   MAIN_RED: "#DB4C3F",
   MAIN_BLACK: "#262C35",
@@ -36,4 +37,5 @@ export {
   SIGN_UP,
   CATEGORY_LIST,
   PRIORITY_LIST,
+  SET_USER,
 };

@@ -1,12 +1,19 @@
 import React, { useReducer } from "react";
-import { LOG_IN, SET_TOKEN } from "../constant";
+import { SET_TOKEN, SET_USER } from "../constant";
+import Cookies from "js-cookie";
 
 const authReducer = (state, action) => {
   switch (action.type) {
     case SET_TOKEN:
+      Cookies.set("token", action.payload.token);
       return {
         ...state,
         token: action.payload.token,
+      };
+    case SET_USER:
+      return {
+        ...state,
+        user: action.payload.user,
       };
     default:
       return state;
@@ -15,11 +22,12 @@ const authReducer = (state, action) => {
 
 const initialState = {
   token: "",
-  isLoading: false,
+  user: {},
 };
 const AuthContext = React.createContext({
   authContext: initialState,
   setToken: () => {},
+  setUser: () => {},
 });
 
 export const AuthProvider = (props) => {
@@ -31,12 +39,19 @@ export const AuthProvider = (props) => {
       payload: { token },
     });
   };
+  const setUser = (user) => {
+    dispatch({
+      type: SET_USER,
+      payload: { user },
+    });
+  };
 
   return (
     <AuthContext.Provider
       value={{
         authContext: authContext,
         setToken,
+        setUser,
       }}
     >
       {props.children}
