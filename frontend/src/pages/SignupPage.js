@@ -70,7 +70,7 @@ export default function SignupPage() {
           {error.length > 0 && <div className="text-red-400 mb-5">{error}</div>}
           <button
             onClick={submitHandler}
-            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg  bg-red text-white"
+            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg  bg-xred text-white"
           >
             Register
           </button>

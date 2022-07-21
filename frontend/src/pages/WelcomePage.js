@@ -10,7 +10,7 @@ export default function WelcomePage() {
       <NavBar />
       <div className="w-full py-6 text-center">
         <div className="text-6xl font-semibold mt-16">
-          Welcome to <span className="text-red">Todap</span>
+          Welcome to <span className="text-xred">Todap</span>
         </div>
         <div className="text-6xl font-semibold mt-4">
           Let's manage your todo list
@@ -20,7 +20,7 @@ export default function WelcomePage() {
         </div>
         <button
             onClick={() => navigate("/signup")}
-            className="font-semibold text-xl border-b border-red rounded-md py-2 px-8 mt-7 bg-red text-white"
+            className="font-semibold text-xl border-b border-xred rounded-md py-2 px-8 mt-7 bg-xred hover:bg-red-500 text-white"
           >
           Get Started
         </button>

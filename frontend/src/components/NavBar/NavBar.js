@@ -22,11 +22,11 @@ const menu = (handleLogout) => (
             target="_blank"
             rel="noopener noreferrer"
             href="/"
-            className="text-base p-4"
+            className="text-base w-28"
           >
             <FontAwesomeIcon
               icon={faUserCircle}
-              className="mr-2 text-gray-600"
+              className="mx-2 text-gray-600"
             />
             Details
           </a>
@@ -38,10 +38,10 @@ const menu = (handleLogout) => (
       {
         key: "2",
         label: (
-          <div onClick={handleLogout} className="text-base p-4">
+          <div onClick={handleLogout} className="text-base w-28">
             <FontAwesomeIcon
               icon={faSignOutAlt}
-              className="mr-2 text-gray-600"
+              className="mx-2 text-gray-600"
             />
             Log out
           </div>
