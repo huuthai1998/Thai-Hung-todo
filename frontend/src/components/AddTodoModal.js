@@ -1,11 +1,22 @@
-import React from "react";
-import { DatePicker, Select, Input } from "antd";
+import React, { useState } from "react";
+import { DatePicker, Select, Input, notification } from "antd";
 import moment from "moment";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../constant";
+import { useTodoContext } from "../contexts/todoStore";
+import axios from "axios";
 const { Option } = Select;
 const { TextArea } = Input;
 
 export default function AddTodoModal(props) {
+  const [dataToAdd, setDataToAdd] = useState({
+    content: "",
+    dueDate: moment(),
+    status: "INPROGRESS",
+    category: CATEGORY_LIST[0],
+    priority: PRIORITY_LIST[0],
+  });
+  const { addTodo } = useTodoContext();
+
   const setShowAddTodo = props.setShowAddTodo;
 
   const sharedInputProps = {
@@ -18,6 +29,40 @@ export default function AddTodoModal(props) {
     showCount: true,
     autoFocus: true,
     size: "large",
+    onChange: (ref) => {
+      setDataToAdd({ ...dataToAdd, content: ref.target.value });
+    },
+  };
+
+  const handleAdd = async () => {
+    console.log("Add todo:", dataToAdd);
+    if (dataToAdd.content && dataToAdd.content.trim().length > 0) {
+      try {
+        dataToAdd.content = dataToAdd.content.trim();
+        const { status, data } = await axios.post("/todo/", dataToAdd);
+        if (status === 201) {
+          addTodo(data.data);
+          setShowAddTodo(false);
+        }
+        notification.info({
+          message: data.message,
+          placement: "top",
+          duration: 2,
+        });
+      } catch (err) {
+        console.log(err);
+        notification.info({
+          message: err.message,
+          placement: "top",
+        });
+      }
+    } else {
+      notification.info({
+        message: "Task content can't be empty",
+        placement: "top",
+        duration: 2,
+      });
+    }
   };
 
   return (
@@ -52,13 +97,18 @@ export default function AddTodoModal(props) {
                               showTime
                               format="YYYY-MM-DD HH:mm"
                               defaultValue={moment()}
+                              onChange={(value) => {
+                                setDataToAdd({ ...dataToAdd, dueDate: value });
+                              }}
                             />
                           </span>
                           <span className="mr-4">
                             <Select
                               defaultValue={CATEGORY_LIST[0]}
                               className="w-32"
-                              onChange={(value) => console.log(value)}
+                              onChange={(value) => {
+                                setDataToAdd({ ...dataToAdd, category: value });
+                              }}
                             >
                               {CATEGORY_LIST.map((val) => (
                                 <Option key={val} value={val}>
@@ -71,7 +121,9 @@ export default function AddTodoModal(props) {
                             <Select
                               defaultValue={PRIORITY_LIST[0]}
                               className="w-32"
-                              onChange={(value) => console.log(value)}
+                              onChange={(value) => {
+                                setDataToAdd({ ...dataToAdd, priority: value });
+                              }}
                             >
                               {PRIORITY_LIST.map((val) => (
                                 <Option
@@ -94,7 +146,7 @@ export default function AddTodoModal(props) {
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                onClick={() => setShowAddTodo(false)}
+                onClick={handleAdd}
                 class="w-full inline-flex justify-center rounded-md border shadow-sm px-4 py-2 bg-xred text-base font-medium text-white hover:bg-red-600 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Add

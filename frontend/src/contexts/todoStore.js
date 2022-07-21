@@ -11,7 +11,7 @@ const todoReducer = (state, action) => {
     case ADD_TODOS:
       return {
         ...state,
-        todos: [...action.payload.todo, state.todos],
+        todos: [...state.todos, action.payload.todo],
       };
     case DELETE_TODOS:
       return {
@@ -19,13 +19,12 @@ const todoReducer = (state, action) => {
         todos: state.todos.filter((todo) => todo.id !== action.payload.id),
       };
     case EDIT_TODOS:
-      const { todo: updatedTodo } = action.payload.todo;
-      let temp = [state.todos];
-      const findIdx = temp.findIndex((todo) => (todo.id = updatedTodo.id));
-      temp[findIdx] = updatedTodo;
+      const updatedTodo = action.payload.todo;
       return {
         ...state,
-        todos: temp,
+        todos: state.todos.map((todo) =>
+          todo.id === updatedTodo.id ? Object.assign(todo, updatedTodo) : todo
+        ),
       };
     default:
       return state;
