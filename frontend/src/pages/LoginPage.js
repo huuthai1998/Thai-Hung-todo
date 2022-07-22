@@ -3,11 +3,12 @@ import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useAuthContext } from "../contexts/authStore";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import InputBox from "../components/InputBox/InputBox";
+import validator from "validator";
+import InputBox from "../components/InputBox";
+import { notification } from "antd";
 
 export default function LoginPage() {
   const [info, setInfo] = useState({});
-  const [error, setError] = useState("");
   const { setToken, authContext } = useAuthContext();
   const navigate = useNavigate();
   const onChangeHandler = (e) => {
@@ -21,6 +22,27 @@ export default function LoginPage() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!info.email) {
+      notification.error({
+        message: "Email can't be empty",
+        placement: "top",
+      });
+      return;
+    }
+    if (!validator.isEmail(info.email)) {
+      notification.error({
+        message: "Invalid email",
+        placement: "top",
+      });
+      return;
+    }
+    if (!info.password) {
+      notification.error({
+        message: "Password can't be empty",
+        placement: "top",
+      });
+      return;
+    }
     try {
       const { data } = await axios.post("/user/login", {
         email: info.email,
@@ -30,7 +52,11 @@ export default function LoginPage() {
       axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
       navigate("/");
     } catch (err) {
-      setError(err.response.data.message);
+      // setError(err.response.data.message);
+      notification.error({
+        message: err.response.data.message,
+        placement: "top",
+      });
     }
   };
 
@@ -54,7 +80,6 @@ export default function LoginPage() {
             icon={faLock}
             onChangeHandler={onChangeHandler}
           />
-          {error.length > 0 && <div className="text-red-400 mb-5">{error}</div>}
           <button
             onClick={submitHandler}
             className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg  bg-xred text-white"
