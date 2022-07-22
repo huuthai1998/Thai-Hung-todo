@@ -178,10 +178,16 @@ export default function Home() {
                       You have <span className="text-xred">0</span> tasks in
                       progress
                     </div>
-                    <button className="font-semibold text-lg rounded-md py-2 px-7 ml-7 bg-indigo-700 text-white hover:bg-indigo-800 active:bg-indigo-700">
+                    <button
+                      className="font-semibold text-lg rounded-md py-2 px-7 ml-7 bg-indigo-700 text-white hover:bg-indigo-800 active:bg-indigo-700"
+                      onClick={() => setShowAddTodo(!showAddTodo)}
+                    >
                       <FontAwesomeIcon icon={faPlus} className="mr-3" />
                       Add new
                     </button>
+                    {showAddTodo && (
+                      <AddTodoModal setShowAddTodo={setShowAddTodo} />
+                    )}
                   </div>
                 )}
               </div>
