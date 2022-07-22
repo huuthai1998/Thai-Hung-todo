@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import Avatar from "../assets/rose.webp";
 import axios from "axios";
 import { useAuthContext } from "../contexts/authStore";
@@ -49,7 +49,8 @@ export default function AccountPage() {
   const { authContext } = useAuthContext();
   const [info, setInfo] = useState({});
   const [error, setError] = useState("");
-
+  const [selectedImage, setSelectedImage] = useState(null);
+  const uploadImgButton = createRef(null);
   useEffect(() => {
     setInfo(authContext.user);
   }, [authContext.user]);
@@ -91,6 +92,15 @@ export default function AccountPage() {
     }
   };
 
+  const handleUpload = async (event) => {
+    setSelectedImage(event.target.files[0]);
+    try {
+      await axios.put("/user", { avatar: event.target.files[0] });
+    } catch (err) {
+      console.log(err.response?.data?.message || err.message);
+    }
+  };
+
   return (
     <div className="h-screen w-screen p-10">
       <h1 className="font-bold text-3xl mb-10">Your account</h1>
@@ -102,7 +112,17 @@ export default function AccountPage() {
             className="rounded-full h-24 w-24 object-cover"
           />
         </div>
-        <button className="font-semibold bg-[#EEEEEE] border-[#EEEEEE] border rounded-md w-[120px] p-1 mr-5">
+        <input
+          ref={uploadImgButton}
+          style={{ display: "none" }}
+          type="file"
+          name="myImage"
+          onChange={handleUpload}
+        />
+        <button
+          onClick={() => uploadImgButton.current.click()}
+          className="font-semibold bg-[#EEEEEE] border-[#EEEEEE] border rounded-md w-[120px] p-1 mr-5"
+        >
           Change avatar
         </button>
         <button className="font-semibold border-[#DB4C3F] border rounded-md w-[120px] p-1 text-[#DB4C3F]">

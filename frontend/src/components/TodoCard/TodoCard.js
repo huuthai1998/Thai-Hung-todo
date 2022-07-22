@@ -1,15 +1,6 @@
-import React, { useRef } from "react";
+import React from "react";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../../constant";
-import {
-  Typography,
-  Button,
-  Row,
-  Col,
-  Popconfirm,
-  DatePicker,
-  Select,
-  Input,
-} from "antd";
+import { Typography, Popconfirm, DatePicker, Select, Input, notification } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -19,187 +10,214 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useState } from "react";
+import { faEdit, faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { useTodoContext } from "../../contexts/todoStore";
+import axios from "axios";
 const { Paragraph } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
 const styles = {
-  container: {
-    backgroundColor: "white",
-    boxShadow: "0px 0px 8px 2px rgba(0, 0, 0, 0.05)",
-    borderRadius: 10,
-    maxWidth: 1160,
-    minHeight: 100,
-  },
   checkCircle: {
-    width: 40,
-    height: 40,
     border: 0,
     backgroundColor: COLORS.BG_COMPLETED,
   },
   circle: {
-    boxSizing: "border-box",
-    width: 40,
-    height: 40,
     border: `4px solid ${COLORS.LIGHT_GRAY}`,
-  },
-  checkIcon: {
-    color: COLORS.COMPLETED,
-    fontSize: 20,
-  },
-  checkContainer: {
-    minHeight: 100,
-  },
-  content: {
-    fontSize: "20px",
-    maxWidth: 820,
-    color: COLORS.MAIN_BLACK,
-    fontWeight: 500,
-  },
-  editingContent: {
-    fontSize: "19px",
-    color: COLORS.MAIN_BLACK,
-    fontWeight: 400,
-    width: 1050,
-    borderRadius: 10,
-    marginBottom: 15,
-  },
-  cardBtn: {
-    borderRadius: 5,
-    fontWeight: 500,
-    fontSize: 14,
-    display: "flex",
-    paddingLeft: 22,
-    paddingRight: 22,
-    marginRight: 16,
-  },
-  btnEdit: {
-    border: `1px solid ${COLORS.BORDER_GRAY}`,
-    color: "#555555",
-  },
-  btnRemove: {
-    border: `1px solid ${COLORS.MAIN_RED}`,
-    color: COLORS.MAIN_RED,
   },
   props: {
     border: 0,
     fontSize: 14,
     backgroundColor: "white",
     fontWeight: 500,
-    marginLeft: 8
-  },
-  btnSave: {
-    backgroundColor: COLORS.MAIN_RED,
-    borderColor: COLORS.MAIN_RED,
-    color: "white",
-  },
-  btnCancel: {
-    backgroundColor: COLORS.BG_GREY,
-    borderColor: COLORS.BG_GREY,
-    color: "black",
+    marginLeft: 8,
   },
 };
 
 export default function TodoCard(props) {
   const [isCompleted, setIsCompleted] = useState(props.isCompleted);
+  const [curData, setCurData] = useState(props.data);
   const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef(null);
+  const [isEdited, setIsEdited] = useState(false);
 
-  const content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
-  const dueTime = moment("2022/07/19 13:30");
-  const category = "PERSONAL";
-  const priority = "HIGH";
+  const { editTodo, deleteTodo } = useTodoContext();
 
   const sharedInputProps = {
-    style: styles.editingContent,
-    defaultValue: content,
+    className: "xl:w-[1040px] lg:w-[880px] md:w-[660px] sm:w-[400px]",
+    defaultValue: curData.content,
     maxLength: 200,
-    // showCount: true,
-    // bordered: false,
+    showCount: true,
     autoFocus: true,
     size: "large",
-    ref: inputRef,
+    onChange: (ref) => {
+      setCurData({ ...curData, content: ref.target.value });
+      setIsEdited(true);
+    },
   };
 
-  const onClickEdit = () => {
-    setIsEditing(true);
-    // console.log(inputRef.current);
-    // inputRef.current.focus({cursor: "end"});
+  const handleDelete = async () => {
+    console.log("Delete todo:", curData.id);
+    try {
+      const { status, data } = await axios.delete(`/todo/${curData.id}`);
+      if (status === 200) deleteTodo(curData.id);
+      else {
+        notification.info({
+          message: data.message,
+          placement: "top",
+          duration: 1,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      notification.info({
+        message: err.message,
+        placement: "top",
+        duration: 2,
+      });
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!isEdited) {
+      setIsEditing(false);
+      return;
+    }
+    console.log("Edit todo:", curData.id);
+    if (curData.content && curData.content.trim().length > 0) {
+      try {
+        curData.content = curData.content.trim();
+        const { status, data } = await axios.patch(`/todo/${curData.id}`, curData);
+        if (status === 200) {
+          editTodo(curData);
+          setIsEditing(false);
+        }
+        notification.info({
+          message: data.message,
+          placement: "top",
+          duration: 2,
+        });
+      } catch (err) {
+        console.log(err);
+        notification.info({
+          message: err.message,
+          placement: "top",
+        });
+      }
+    } else {
+      notification.info({
+        message: "Task content can't be empty",
+        placement: "top",
+        duration: 2,
+      });
+    }
+    setIsEdited(false);
+  };
+
+  const changeStatus = async () => {
+    if (isEditing) return;   
+    console.log("Change todo status:", curData.id); 
+    const newStatus = !isCompleted ? "COMPLETED" : "INPROGRESS";
+    if (isCompleted) console.log("Uncheck");
+    else console.log("Check");
+    try {
+      const { status, data } = await axios.patch(`/todo/${curData.id}`, { status: newStatus });
+      if (status === 200) {
+        setIsCompleted(!isCompleted);
+        editTodo({ ...curData, status: newStatus });
+        notification.info({
+          message: "Status updated",
+          placement: "top",
+          duration: 1.5,
+        });
+      }
+      else {
+        notification.info({
+          message: data.message,
+          placement: "top",
+          duration: 2,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      notification.info({
+        message: err.message,
+        placement: "top",
+      });
+    }
   };
 
   return (
-    <Row style={styles.container}>
-      <Col span={2}>
-        <Row justify="center" align="middle" style={styles.checkContainer}>
-          <Button
-            shape="circle"
-            style={isCompleted ? styles.checkCircle : styles.circle}
-            onClick={() => {
-              if (!isEditing) setIsCompleted(!isCompleted);
-            }}
-          >
-            {isCompleted ? (
-              <FontAwesomeIcon icon={faCheck} style={styles.checkIcon} />
+    <div className="min-h-[100px] max-w-6xl grid grid-cols-12 bg-white rounded-lg shadow-[0_0_8px_2px_rgba(0,0,0,0.05)]">
+      <div className="md:col-span-1 h-full grid place-items-center">
+        <button
+          className="rounded-full w-10 h-10"
+          style={isCompleted ? styles.checkCircle : styles.circle}
+          onClick={changeStatus}
+        >
+          {isCompleted ? (
+            <FontAwesomeIcon
+              icon={faCheck}
+              className="text-completed-400 text-xl"
+            />
+          ) : null}
+        </button>
+      </div>
+      <div className="col-span-11">
+        <div className="flex justify-between pt-4">
+          <div>
+            {isEditing ? (
+              <TextArea {...sharedInputProps} />
             ) : (
-              <FontAwesomeIcon icon={faCheck} color="white" />
+              <Paragraph
+                ellipsis={{
+                  rows: 2,
+                  // -- remove this will improve ux
+                  // expandable: true,
+                  // symbol: "more",
+                }}
+                className="text-xl max-w-[920px] text-black font-medium"
+              >
+                {curData.content}
+              </Paragraph>
             )}
-          </Button>
-        </Row>
-      </Col>
-      <Col span={22}>
-        <Col span={24}>
-          <Row justify="space-between" style={{ paddingTop: 17 }}>
-            <Col>
-              {isEditing ? (
-                <TextArea {...sharedInputProps} />
-              ) : (
-                <Paragraph
-                  ellipsis={{
-                    rows: 1,
-                    expandable: true,
-                    symbol: "more",
-                  }}
-                  style={styles.content}
+          </div>
+          {isEditing ? null : (
+            <div>
+              {isCompleted ? null : (
+                <button
+                  className="font-medium text-lg pb-1 px-2 mr-2 hover:text-gray-600 text-gray-500"
+                  onClick={() => setIsEditing(true)}
                 >
-                  {content}
-                </Paragraph>
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
               )}
-            </Col>
-            {isEditing ? null : (
-              <Col flex="auto">
-                <Row justify="end">
-                  {isCompleted ? null : (
-                    <Button
-                      style={{ ...styles.btnEdit, ...styles.cardBtn }}
-                      onClick={onClickEdit}
-                    >
-                      Edit
-                    </Button>
-                  )}
-                  <Popconfirm
-                    placement="bottomLeft"
-                    title="Do you really want to remove this post?"
-                    okText="Yes"
-                    cancelText="No"
-                  >
-                    <Button style={{ ...styles.btnRemove, ...styles.cardBtn }}>
-                      Remove
-                    </Button>
-                  </Popconfirm>
-                </Row>
-              </Col>
-            )}
-          </Row>
-        </Col>
-        <Col span={24} style={{ paddingBottom: 15 }}>
-          <Row justify="space-between">
-            <Row>
-              <span style={{ marginRight: 18 }}>
+              <Popconfirm
+                placement="bottomLeft"
+                title="Do you really want to delete this task?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={handleDelete}
+              >
+                <button className="font-medium text-lg pb-1 px-2 mr-2 hover:text-red-700 text-xred">
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </button>
+              </Popconfirm>
+            </div>
+          )}
+        </div>
+        <div className="pb-4">
+          <div className="flex justify-between">
+            <div>
+              <span className="mr-5">
                 {isEditing ? (
                   <DatePicker
                     showTime
                     format="YYYY-MM-DD HH:mm"
-                    defaultValue={dueTime}
+                    defaultValue={moment(curData.dueDate)}
+                    onChange={(value) => {
+                      setCurData({ ...curData, dueDate: value });
+                      setIsEdited(true);
+                    }}
                   />
                 ) : (
                   <>
@@ -207,20 +225,21 @@ export default function TodoCard(props) {
                       icon={faCalendarDays}
                       color={COLORS.TIME}
                     />
-                    <button
-                      style={{ ...styles.props, color: COLORS.TIME }}
-                    >
-                      {dueTime.format("ddd MMM DD YYYY HH:mm")}
+                    <button style={{ ...styles.props, color: COLORS.TIME }}>
+                      {moment(curData.dueDate).format("ddd MMM DD YYYY HH:mm")}
                     </button>
                   </>
                 )}
               </span>
-              <span style={{ marginRight: 18 }}>
+              <span className="mr-5">
                 {isEditing ? (
                   <Select
-                    defaultValue={category}
-                    style={{ width: 120 }}
-                    onChange={(value) => console.log(value)}
+                    defaultValue={curData.category}
+                    className="w-32"
+                    onChange={(value) => {
+                      setCurData({ ...curData, category: value });
+                      setIsEdited(true);
+                    }}
                   >
                     {CATEGORY_LIST.map((val) => (
                       <Option key={val} value={val}>
@@ -231,10 +250,8 @@ export default function TodoCard(props) {
                 ) : (
                   <>
                     <FontAwesomeIcon icon={faCircle} color={COLORS.BG_BLUE} />
-                    <button
-                      style={{ ...styles.props, color: COLORS.CATEGORY }}
-                    >
-                      {category}
+                    <button style={{ ...styles.props, color: COLORS.CATEGORY }}>
+                      {curData.category}
                     </button>
                   </>
                 )}
@@ -242,9 +259,12 @@ export default function TodoCard(props) {
               <span>
                 {isEditing ? (
                   <Select
-                    defaultValue={priority}
-                    style={{ width: 120 }}
-                    onChange={(value) => console.log(value)}
+                    defaultValue={curData.priority}
+                    className="w-32"
+                    onChange={(value) => {
+                      setCurData({ ...curData, priority: value });
+                      setIsEdited(true);
+                    }}
                   >
                     {PRIORITY_LIST.map((val) => (
                       <Option
@@ -258,35 +278,41 @@ export default function TodoCard(props) {
                   </Select>
                 ) : (
                   <>
-                    <FontAwesomeIcon icon={faFlag} color={COLORS[priority]} />
+                    <FontAwesomeIcon
+                      icon={faFlag}
+                      color={COLORS[curData.priority]}
+                    />
                     <button
                       style={{
                         ...styles.props,
-                        color: COLORS[priority],
+                        color: COLORS[curData.priority],
                       }}
                     >
-                      {priority}
+                      {curData.priority}
                     </button>
                   </>
                 )}
               </span>
-            </Row>
+            </div>
             {isEditing ? (
-              <Row style={{ marginTop: 35 }}>
-                <Button
-                  style={{ ...styles.btnCancel, ...styles.cardBtn }}
+              <div className="mt-8">
+                <button
+                  className="rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-base font-medium text-black hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => setIsEditing(false)}
                 >
                   Cancel
-                </Button>
-                <Button style={{ ...styles.btnSave, ...styles.cardBtn }}>
+                </button>
+                <button
+                  className="rounded-md shadow-sm px-4 py-1 mr-4 bg-xred text-base font-medium text-white hover:bg-red-600 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={handleEdit}
+                >
                   Save
-                </Button>
-              </Row>
+                </button>
+              </div>
             ) : null}
-          </Row>
-        </Col>
-      </Col>
-    </Row>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

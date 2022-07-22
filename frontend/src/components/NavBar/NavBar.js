@@ -19,10 +19,10 @@ const menu = (handleLogout) => (
       {
         key: "1",
         label: (
-          <Link to="/account" className="text-base p-4">
+          <Link to="/account" className="text-base w-28">
             <FontAwesomeIcon
               icon={faUserCircle}
-              className="mr-2 text-gray-600"
+              className="mx-2 text-gray-600"
             />
             Details
           </Link>
@@ -34,10 +34,10 @@ const menu = (handleLogout) => (
       {
         key: "2",
         label: (
-          <div onClick={handleLogout} className="text-base px-4">
+          <div onClick={handleLogout} className="text-base w-28">
             <FontAwesomeIcon
               icon={faSignOutAlt}
-              className="mr-2 text-gray-600"
+              className="mx-2 text-gray-600"
             />
             Log out
           </div>
@@ -57,21 +57,21 @@ export default function NavBar() {
 
   return (
     <nav className="flex justify-between h-[70px] items-center px-10 border-b border-gray-200">
-      <div>
+      <button onClick={() => navigate("/")}>
         <img src={Logo} alt="logo" width="160px" height="55px" />
-      </div>
+      </button>
 
       {!authContext.token ? (
-        <div className="flex justify-end items-center">
+        <div>
           <button
             onClick={() => navigate("/login")}
-            className="font-semibold text-lg border-b border-gray-200 rounded-md py-1 px-7 bg-gray-200 text-black"
+            className="font-medium text-lg text-black hover:bg-gray-100 rounded-md py-1 px-7"
           >
             Log in
           </button>
           <button
             onClick={() => navigate("/signup")}
-            className="font-semibold text-lg border-b border-red rounded-md py-1 px-7 ml-7 bg-red text-white"
+            className="font-semibold text-lg rounded-md py-1 px-7 ml-3 bg-xred hover:bg-red-500 text-white"
           >
             Sign up
           </button>

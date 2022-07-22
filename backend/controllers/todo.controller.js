@@ -68,7 +68,6 @@ exports.todo_delete_one = async function (req, res, next) {
   } else {
     const id = req.params.todoID;
     try {
-      // Soft delete
       await Todo.destroy({ where: { id, deletedAt: null } });
       res.status(200).send({ message: "Deleted successfully" });
     } catch (err) {

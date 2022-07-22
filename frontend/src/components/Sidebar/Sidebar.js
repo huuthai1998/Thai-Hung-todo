@@ -4,27 +4,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck, faCalendarMinus } from "@fortawesome/free-regular-svg-icons";
 
 
-export default function Sidebar() {
+export default function Sidebar(props) {
   const navigate = useNavigate();
   return (
     <aside className="w-64 bg-[#FAFAFA] min-h-screen">
-      <ul class="space-y-2">
+      <ul className="space-y-2">
         <li>
           <button
-            class="w-full flex items-center py-3 pl-[41px] my-4 text-base font-medium bg-gray-100 hover:bg-gray-200"
-            onClick={() => navigate("/?filter=inprogress")}
+            className={`w-full flex items-center py-3 pl-[41px] my-4 text-base font-medium hover:bg-gray-200 ${props.status === "COMPLETED" ? null : "bg-gray-200"}`}
+            onClick={() => {console.log("inprogress tab"); navigate("/?filter=inprogress");}}
           >
-            <FontAwesomeIcon icon={faCalendarMinus} size="lg" className="text-blue"/>
-            <span class="ml-3">In progress</span>
+            <FontAwesomeIcon icon={faCalendarMinus} size="lg" className="text-xred"/>
+            <span className="ml-3">In progress</span>
           </button>
         </li>
         <li>
           <button 
-            class="w-full flex items-center py-3 pl-[41px] my-4 text-base font-medium hover:bg-gray-200"
-            onClick={() => navigate("?filter=completed")}
+            className={`w-full flex items-center py-3 pl-[41px] my-4 text-base font-medium hover:bg-gray-200 ${props.status === "COMPLETED" ? "bg-gray-200" : null}`}
+            onClick={() => {console.log("completed tab"); navigate("?filter=completed");}}
           >
             <FontAwesomeIcon icon={faCalendarCheck} size="lg" className="text-completed-400"/>
-            <span class="ml-3">Completed</span>
+            <span className="ml-3">Completed</span>
           </button>
         </li>
       </ul>

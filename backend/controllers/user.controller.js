@@ -12,7 +12,7 @@ exports.sign_in = async (req, res, next) => {
     if (!user) throw new Error("Email is incorrect");
     const passwordIsMatch = await bcrypt.compare(password, user.password);
     if (!passwordIsMatch) throw new Error("Password is incorrect");
-    const token = signToken(email);
+    const token = signToken(email, saltRounds);
     res.status(200).send({ token });
   } catch (err) {
     logger.error(err);
