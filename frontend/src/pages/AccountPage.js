@@ -48,16 +48,21 @@ const InputAccount = ({
 
 export default function AccountPage() {
   const { authContext } = useAuthContext();
-  const [info, setInfo] = useState({});
+  const [info, setInfo] = useState({
+    password: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const uploadImgButton = createRef(null);
   useEffect(() => {
-    setInfo(authContext.user);
+    setInfo({ ...info, ...authContext.user });
   }, [authContext.user]);
 
   const onChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
+    console.log(info);
     setInfo({ ...info, [name]: value });
   };
 
@@ -78,12 +83,7 @@ export default function AccountPage() {
   const changePassword = async (e) => {
     e.preventDefault();
     try {
-      if (
-        !info.oldPassword ||
-        !info.newPassword ||
-        info.oldPassword?.length === 0 ||
-        info.newPassword?.length === 0
-      )
+      if (info.password?.length === 0 || info.newPassword?.length === 0)
         throw Error(`Please input your password`);
       if (info.confirmPassword !== info.newPassword)
         throw Error(`Passwords don't match`);
