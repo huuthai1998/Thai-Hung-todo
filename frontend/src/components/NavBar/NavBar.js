@@ -52,7 +52,7 @@ export default function NavBar() {
 
   const handleLogout = () => {
     setToken("");
-    navigate("/login");
+    navigate("/welcome");
   };
 
   return (

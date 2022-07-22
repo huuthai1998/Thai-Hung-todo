@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import moment from "moment";
-import NavBar from "../components/NavBar/NavBar";
 import Sidebar from "../components/Sidebar/Sidebar";
 import TodoCard from "../components/TodoCard/TodoCard";
 import { useTodoContext } from "../contexts/todoStore";
@@ -9,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 import AddTodoModal from "../components/AddTodoModal";
+import { useAuthContext } from "../contexts/authStore";
 
 const fakeTodos = [
   {
@@ -72,24 +72,28 @@ export default function Home() {
   const [tabStatus, setTabStatus] = useState("");
   const [showAddTodo, setShowAddTodo] = useState(false);
   const [error, setError] = useState("");
-
+  const { authContext } = useAuthContext();
   const { todoContext, setTodos } = useTodoContext();
   const query = useQuery();
 
   const fetchTodos = async () => {
     try {
-      const { data } = await axios.get("/todo");
-      console.log("Todos count: ", data.count);
-      setTodos(data.data);
+      if (authContext.token) {
+        const { data } = await axios.get("/todo");
+        console.log("Todos count: ", data.count);
+        console.log(data.data);
+        setTodos(data.data);
+      }
     } catch (err) {
       console.log(err);
       setError(err.message);
     }
   };
+  console.log(todoContext);
 
   useEffect(() => {
     fetchTodos();
-  }, []);
+  }, [authContext.token]);
 
   const getTabStatus = () => {
     try {
@@ -121,12 +125,14 @@ export default function Home() {
       setCompletedTodos(
         todoContext.todos.filter((todo) => todo.status === "COMPLETED")
       );
+    } else {
+      setInprogressTodos([]);
+      setCompletedTodos([]);
     }
   }, [todoContext.todos]);
 
   return (
     <div>
-      <NavBar />
       <div className="flex">
         <Sidebar status={tabStatus} />
         {error ? (

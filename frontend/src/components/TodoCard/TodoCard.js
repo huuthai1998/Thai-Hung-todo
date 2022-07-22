@@ -1,6 +1,13 @@
 import React from "react";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../../constant";
-import { Typography, Popconfirm, DatePicker, Select, Input, notification } from "antd";
+import {
+  Typography,
+  Popconfirm,
+  DatePicker,
+  Select,
+  Input,
+  notification,
+} from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -69,7 +76,7 @@ export default function TodoCard(props) {
       }
     } catch (err) {
       console.log(err);
-      notification.info({
+      notification.error({
         message: err.message,
         placement: "top",
         duration: 2,
@@ -86,7 +93,10 @@ export default function TodoCard(props) {
     if (curData.content && curData.content.trim().length > 0) {
       try {
         curData.content = curData.content.trim();
-        const { status, data } = await axios.patch(`/todo/${curData.id}`, curData);
+        const { status, data } = await axios.patch(
+          `/todo/${curData.id}`,
+          curData
+        );
         if (status === 200) {
           editTodo(curData);
           setIsEditing(false);
@@ -98,7 +108,7 @@ export default function TodoCard(props) {
         });
       } catch (err) {
         console.log(err);
-        notification.info({
+        notification.error({
           message: err.message,
           placement: "top",
         });
@@ -114,13 +124,15 @@ export default function TodoCard(props) {
   };
 
   const changeStatus = async () => {
-    if (isEditing) return;   
-    console.log("Change todo status:", curData.id); 
+    if (isEditing) return;
+    console.log("Change todo status:", curData.id);
     const newStatus = !isCompleted ? "COMPLETED" : "INPROGRESS";
     if (isCompleted) console.log("Uncheck");
     else console.log("Check");
     try {
-      const { status, data } = await axios.patch(`/todo/${curData.id}`, { status: newStatus });
+      const { status, data } = await axios.patch(`/todo/${curData.id}`, {
+        status: newStatus,
+      });
       if (status === 200) {
         setIsCompleted(!isCompleted);
         editTodo({ ...curData, status: newStatus });
@@ -129,8 +141,7 @@ export default function TodoCard(props) {
           placement: "top",
           duration: 1.5,
         });
-      }
-      else {
+      } else {
         notification.info({
           message: data.message,
           placement: "top",

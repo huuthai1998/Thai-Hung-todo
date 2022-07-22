@@ -2,6 +2,7 @@ import React, { createRef, useEffect, useState } from "react";
 import Avatar from "../assets/rose.webp";
 import axios from "axios";
 import { useAuthContext } from "../contexts/authStore";
+import { notification } from "antd";
 
 const InputAccount = ({
   type,
@@ -64,7 +65,11 @@ export default function AccountPage() {
     e.preventDefault();
     try {
       await axios.put("/user", { username: info.username });
-      alert("Successfully changed your user name");
+      notification.info({
+        message: "Successfully changed your user name",
+        placement: "top",
+        duration: 1,
+      });
     } catch (err) {
       setError(err.message);
     }
@@ -75,7 +80,7 @@ export default function AccountPage() {
     try {
       if (
         !info.oldPassword ||
-        info.newPassword ||
+        !info.newPassword ||
         info.oldPassword?.length === 0 ||
         info.newPassword?.length === 0
       )
@@ -86,9 +91,17 @@ export default function AccountPage() {
         oldPassword: info.password,
         newPassword: info.newPassword,
       });
-      alert("Successfully changed your password");
+      notification.info({
+        message: "Successfully changed your password",
+        placement: "top",
+        duration: 1,
+      });
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+        duration: 1,
+      });
     }
   };
 

@@ -9,6 +9,7 @@ const todoReducer = (state, action) => {
         todos: action.payload.todos,
       };
     case ADD_TODOS:
+      console.log(state.todos);
       return {
         ...state,
         todos: [...state.todos, action.payload.todo],
@@ -32,7 +33,7 @@ const todoReducer = (state, action) => {
 };
 
 const initialState = {
-  todos: [],
+  todos: [`s`],
   isLoading: false,
 };
 const TodoContext = React.createContext({

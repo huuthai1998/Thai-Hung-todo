@@ -10,7 +10,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import AccountPage from "./pages/AccountPage";
 import Cookies from "js-cookie";
-import { SET_TOKEN } from "./constant";
+import NavBar from "./components/NavBar/NavBar";
 
 axios.defaults.baseURL = "http://localhost:5001/";
 axios.defaults.headers.common.accept = "application/json";
@@ -20,6 +20,7 @@ const App = () => {
 
   useEffect(() => {
     axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+    console.log(axios.defaults.headers.common.authorization);
     if (authContext.token.length > 0) fetchUserInfo();
   }, [authContext.token]);
 
@@ -35,10 +36,13 @@ const App = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     setToken(token);
+    axios.defaults.headers.common.authorization = `Bearer ${token}`;
   }, []);
 
   return (
     <BrowserRouter>
+      <NavBar />
+
       <Routes>
         <Route path="/welcome" element={<WelcomePage />}></Route>
         <Route path="/" element={<Home />}></Route>

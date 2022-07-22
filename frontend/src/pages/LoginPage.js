@@ -4,7 +4,6 @@ import { useAuthContext } from "../contexts/authStore";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import InputBox from "../components/InputBox/InputBox";
-import NavBar from "../components/NavBar/NavBar";
 
 export default function LoginPage() {
   const [info, setInfo] = useState({});
@@ -33,7 +32,6 @@ export default function LoginPage() {
 
   return (
     <div>
-      <NavBar />
       <div className="flex justify-center mt-32">
         <form action="submit" className="loginBox w-[450px]">
           <h1 className="font-sans font-bold text-center mb-10 text-3xl">
