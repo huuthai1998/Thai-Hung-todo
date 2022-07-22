@@ -25,6 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Todo",
+      timestamps: true,
+      paranoid: true,
     }
   );
   Todo.beforeCreate(todo => {
