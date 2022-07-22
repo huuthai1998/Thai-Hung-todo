@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useAuthContext } from "../contexts/authStore";
 import { useNavigate } from "react-router";
@@ -8,12 +8,16 @@ import InputBox from "../components/InputBox/InputBox";
 export default function SignupPage() {
   const [info, setInfo] = useState({});
   const [error, setError] = useState("");
-  const { setToken } = useAuthContext();
+  const { setToken, authContext } = useAuthContext();
   const navigate = useNavigate();
   const onChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
     setInfo({ ...info, [name]: value });
   };
+
+  useEffect(() => {
+    if (authContext.token.length > 0) navigate("/ ");
+  }, [authContext.token]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

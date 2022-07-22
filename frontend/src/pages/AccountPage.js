@@ -62,7 +62,6 @@ export default function AccountPage() {
 
   const onChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
-    console.log(info);
     setInfo({ ...info, [name]: value });
   };
 

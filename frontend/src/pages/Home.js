@@ -6,7 +6,7 @@ import TodoCard from "../components/TodoCard/TodoCard";
 import { useTodoContext } from "../contexts/todoStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AddTodoModal from "../components/AddTodoModal";
 import { useAuthContext } from "../contexts/authStore";
 
@@ -67,6 +67,7 @@ function useQuery() {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const [inprogressTodos, setInprogressTodos] = useState([]);
   const [completedTodos, setCompletedTodos] = useState([]);
   const [tabStatus, setTabStatus] = useState("");
@@ -76,12 +77,15 @@ export default function Home() {
   const { todoContext, setTodos } = useTodoContext();
   const query = useQuery();
 
+  useEffect(() => {
+    if (authContext.token.length <= 0) navigate("/welcome");
+  }, [authContext.token]);
+
   const fetchTodos = async () => {
     try {
       if (authContext.token) {
         const { data } = await axios.get("/todo");
         console.log("Todos count: ", data.count);
-        console.log(data.data);
         setTodos(data.data);
       }
     } catch (err) {
@@ -89,7 +93,6 @@ export default function Home() {
       setError(err.message);
     }
   };
-  console.log(todoContext);
 
   useEffect(() => {
     fetchTodos();
@@ -160,7 +163,6 @@ export default function Home() {
                         className="font-semibold text-lg rounded-md py-2 px-7 ml-7 bg-indigo-700 text-white hover:bg-indigo-800 active:bg-indigo-700"
                         onClick={() => {
                           setShowAddTodo(!showAddTodo);
-                          console.log("asdfasdf");
                         }}
                       >
                         <FontAwesomeIcon icon={faPlus} className="mr-3" />

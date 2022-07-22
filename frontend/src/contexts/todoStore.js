@@ -9,7 +9,6 @@ const todoReducer = (state, action) => {
         todos: action.payload.todos,
       };
     case ADD_TODOS:
-      console.log(state.todos);
       return {
         ...state,
         todos: [...state.todos, action.payload.todo],

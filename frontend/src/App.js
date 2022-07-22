@@ -20,7 +20,6 @@ const App = () => {
 
   useEffect(() => {
     axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
-    console.log(axios.defaults.headers.common.authorization);
     if (authContext.token.length > 0) fetchUserInfo();
   }, [authContext.token]);
 
@@ -29,7 +28,7 @@ const App = () => {
       const { data } = await axios.get("/user");
       setUser(data.user);
     } catch (err) {
-      console.log(err.response.data.message);
+      console.log(err?.response?.data?.message);
     }
   };
 
