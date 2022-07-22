@@ -1,65 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import moment from "moment";
-import Sidebar from "../components/Sidebar/Sidebar";
-import TodoCard from "../components/TodoCard/TodoCard";
+import Sidebar from "../components/Sidebar";
+import TodoCard from "../components/TodoCard";
 import { useTodoContext } from "../contexts/todoStore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import AddTodoModal from "../components/AddTodoModal";
 import { useAuthContext } from "../contexts/authStore";
-
-const fakeTodos = [
-  {
-    id: "c3d0f392-5df7-44ff-9897-99313e3734a3",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-    dueDate: "2022/07/18 13:30",
-    category: "PERSONAL",
-    priority: "HIGH",
-    status: "INPROGRESS",
-  },
-  {
-    id: "266738ab-9550-41d6-8f29-8d46e5983c3d",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-    dueDate: "2022/07/18 13:30",
-    category: "WORK",
-    priority: "HIGH",
-    status: "INPROGRESS",
-  },
-  {
-    id: "a96b777f-d99f-473c-83b7-9f96b5233b5a",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-    dueDate: "2022/07/20 13:30",
-    category: "PERSONAL",
-    priority: "URGENT",
-    status: "INPROGRESS",
-  },
-  {
-    id: "94c4afd9-318a-432e-8833-09ea65993b99",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-    dueDate: "2022/07/17 13:30",
-    category: "PERSONAL",
-    priority: "MEDIUM",
-    status: "INPROGRESS",
-  },
-  {
-    id: "3569a003-110a-4fb0-92fa-da5d163aa5d2",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-    dueDate: "2022/07/19 13:30",
-    category: "WORK",
-    priority: "HIGH",
-    status: "COMPLETED",
-  },
-  {
-    id: "734c8af2-a64d-4b1f-ac25-953555ee10e1",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-    dueDate: "2022/07/18 13:30",
-    category: "PERSONAL",
-    priority: "HIGH",
-    status: "COMPLETED",
-  },
-];
 
 function useQuery() {
   const { search } = useLocation();

@@ -10,7 +10,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import AccountPage from "./pages/AccountPage";
 import Cookies from "js-cookie";
-import NavBar from "./components/NavBar/NavBar";
+import NavBar from "./components/NavBar";
 
 axios.defaults.baseURL = "http://localhost:5001/";
 axios.defaults.headers.common.accept = "application/json";

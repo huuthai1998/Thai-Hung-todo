@@ -26,6 +26,7 @@ export default function InputBox({
         onChange={onChangeHandler}
         className="ml-7 py-3 focus:outline-none flex-1 pr-5 font-medium text-base"
         placeholder={placeholder}
+        required={true}
       />
       {type && (
         <FontAwesomeIcon

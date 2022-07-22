@@ -1,5 +1,5 @@
 import React from "react";
-import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../../constant";
+import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../constant";
 import {
   Typography,
   Popconfirm,
@@ -18,7 +18,7 @@ import {
 import moment from "moment";
 import { useState } from "react";
 import { faEdit, faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import { useTodoContext } from "../../contexts/todoStore";
+import { useTodoContext } from "../contexts/todoStore";
 import axios from "axios";
 const { Paragraph } = Typography;
 const { Option } = Select;

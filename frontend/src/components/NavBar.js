@@ -6,10 +6,9 @@ import {
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Dropdown, Menu } from "antd";
-import { useAuthContext } from "../../contexts/authStore";
-import Avatar from "../../assets/rose.webp";
-import Logo from "../../assets/Logo.png";
-import "antd/dist/antd.css";
+import { useAuthContext } from "../contexts/authStore";
+import Avatar from "../assets/rose.webp";
+import Logo from "../assets/Logo.png";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
