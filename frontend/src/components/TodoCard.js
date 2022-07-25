@@ -157,6 +157,11 @@ export default function TodoCard(props) {
     }
   };
 
+  const disabledDate = (current) => {
+    // Can not select days before today
+    return current && current < moment().add(-1, "days");
+  };
+
   return (
     <div className="min-h-[100px] max-w-6xl grid grid-cols-12 bg-white rounded-lg shadow-[0_0_8px_2px_rgba(0,0,0,0.05)]">
       <div className="md:col-span-1 h-full grid place-items-center">
@@ -229,6 +234,7 @@ export default function TodoCard(props) {
                       setCurData({ ...curData, dueDate: value });
                       setIsEdited(true);
                     }}
+                    disabledDate={disabledDate}
                   />
                 ) : (
                   <>
