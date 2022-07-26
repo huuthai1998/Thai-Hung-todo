@@ -19,6 +19,12 @@ axios.defaults.headers.common.accept = "application/json";
 const App = () => {
   const { authContext, setUser, setToken } = useAuthContext();
 
+  useEffect(() => {
+    const token = Cookies.get("token");
+    setToken(token);
+    axios.defaults.headers.common.authorization = `Bearer ${token}`;
+  }, []);
+
   const fetchUserInfo = async () => {
     try {
       const { data } = await axios.get("/user");
@@ -30,20 +36,15 @@ const App = () => {
   };
 
   useEffect(() => {
-    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
-    if (authContext.token.length > 0) fetchUserInfo();
+    if (authContext.token.length > 0) {
+      fetchUserInfo();
+      axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+    }
   }, [authContext.token]);
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    setToken(token);
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
-  }, []);
 
   return (
     <BrowserRouter>
       <NavBar />
-
       <Routes>
         <Route path="/welcome" element={<WelcomePage />}></Route>
         <Route path="/" element={<Home />}></Route>

@@ -11,6 +11,7 @@ import Avatar from "../assets/rose.webp";
 import Logo from "../assets/Logo.png";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const menu = (handleLogout) => (
   <Menu
@@ -51,6 +52,7 @@ export default function NavBar() {
 
   const handleLogout = () => {
     setToken("");
+    Cookies.remove("token");
     navigate("/welcome");
   };
 

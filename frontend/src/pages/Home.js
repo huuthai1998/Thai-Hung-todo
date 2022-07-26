@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import moment from "moment";
@@ -9,6 +10,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import AddTodoModal from "../components/AddTodoModal";
 import { useAuthContext } from "../contexts/authStore";
+import Cookies from "js-cookie";
 
 function useQuery() {
   const { search } = useLocation();
@@ -27,7 +29,7 @@ export default function Home() {
   const query = useQuery();
 
   useEffect(() => {
-    if (authContext.token.length <= 0) navigate("/welcome");
+    if (!Cookies.get("token")) navigate("/welcome");
   }, [authContext.token]);
 
   const fetchTodos = async () => {
