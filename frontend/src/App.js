@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "./App.css";
 
 import { Route, BrowserRouter, Routes } from "react-router-dom";
@@ -18,19 +19,20 @@ axios.defaults.headers.common.accept = "application/json";
 const App = () => {
   const { authContext, setUser, setToken } = useAuthContext();
 
-  useEffect(() => {
-    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
-    if (authContext.token.length > 0) fetchUserInfo();
-  }, [authContext.token]);
-
   const fetchUserInfo = async () => {
     try {
       const { data } = await axios.get("/user");
       setUser(data.user);
     } catch (err) {
       console.log(err?.response?.data?.message);
+      setToken("");
     }
   };
+
+  useEffect(() => {
+    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+    if (authContext.token.length > 0) fetchUserInfo();
+  }, [authContext.token]);
 
   useEffect(() => {
     const token = Cookies.get("token");

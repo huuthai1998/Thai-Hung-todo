@@ -54,9 +54,14 @@ export default function NavBar() {
     navigate("/welcome");
   };
 
+  const onClickLogo = () => {
+    if (!authContext.token) navigate("/welcome");
+    else navigate("/");
+  }
+
   return (
     <nav className="flex justify-between h-[70px] items-center px-10 border-b border-gray-200">
-      <button onClick={() => navigate("/")}>
+      <button onClick={onClickLogo}>
         <img src={Logo} alt="logo" width="160px" height="55px" />
       </button>
 
