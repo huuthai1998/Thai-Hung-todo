@@ -12,7 +12,8 @@ import AccountPage from "./pages/AccountPage";
 import Cookies from "js-cookie";
 import NavBar from "./components/NavBar";
 
-axios.defaults.baseURL = "https://ca-sea-webapp-thai-be.azurewebsites.net/";
+axios.defaults.baseURL =
+  "https://ca-sea-webapp-thai-backend.azurewebsites.net/";
 axios.defaults.headers.common.accept = "application/json";
 
 const App = () => {
