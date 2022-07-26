@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "./App.css";
 
 import { Route, BrowserRouter, Routes } from "react-router-dom";
@@ -20,9 +21,10 @@ const App = () => {
   const { authContext, setUser, setToken } = useAuthContext();
 
   useEffect(() => {
-    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
-    if (authContext.token.length > 0) fetchUserInfo();
-  }, [authContext.token]);
+    const token = Cookies.get("token");
+    setToken(token);
+    axios.defaults.headers.common.authorization = `Bearer ${token}`;
+  }, []);
 
   const fetchUserInfo = async () => {
     try {
@@ -30,19 +32,20 @@ const App = () => {
       setUser(data.user);
     } catch (err) {
       console.log(err?.response?.data?.message);
+      setToken("");
     }
   };
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    setToken(token);
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
-  }, []);
+    if (authContext.token.length > 0) {
+      fetchUserInfo();
+      axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+    }
+  }, [authContext.token]);
 
   return (
     <BrowserRouter>
       <NavBar />
-
       <Routes>
         <Route path="/welcome" element={<WelcomePage />}></Route>
         <Route path="/" element={<Home />}></Route>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useEffect, useState } from "react";
 import Avatar from "../assets/rose.webp";
 import axios from "axios";
@@ -53,7 +54,6 @@ export default function AccountPage() {
     newPassword: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const uploadImgButton = createRef(null);
   useEffect(() => {
@@ -75,7 +75,11 @@ export default function AccountPage() {
         duration: 1,
       });
     } catch (err) {
-      setError(err.message);
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+        duration: 1,
+      });
     }
   };
 
