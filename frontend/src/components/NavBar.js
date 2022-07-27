@@ -1,4 +1,7 @@
-import React from "react";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
@@ -6,12 +9,10 @@ import {
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Dropdown, Menu } from "antd";
-import { useAuthContext } from "../contexts/authStore";
 import Avatar from "../assets/rose.webp";
 import Logo from "../assets/Logo.png";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
+
+import { useAuthContext } from "../contexts/authStore";
 
 const menu = (handleLogout) => (
   <Menu
@@ -46,6 +47,7 @@ const menu = (handleLogout) => (
     ]}
   />
 );
+
 export default function NavBar() {
   const { authContext, setToken } = useAuthContext();
   const navigate = useNavigate();
@@ -59,7 +61,7 @@ export default function NavBar() {
   const onClickLogo = () => {
     if (!authContext.token) navigate("/welcome");
     else navigate("/");
-  }
+  };
 
   return (
     <nav className="flex justify-between h-[70px] items-center px-10 border-b border-gray-200">

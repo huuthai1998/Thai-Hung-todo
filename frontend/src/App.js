@@ -1,17 +1,19 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import "./App.css";
-
+import { useEffect } from "react";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
-import { useAuthContext } from "./contexts/authStore";
+import Cookies from "js-cookie";
+import axios from "axios";
+
 import Home from "./pages/Home";
-import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import axios from "axios";
-import { useEffect } from "react";
 import AccountPage from "./pages/AccountPage";
-import Cookies from "js-cookie";
+import WelcomePage from "./pages/WelcomePage";
+import NotFoundPage from "./pages/NotFoundPage";
+
+import "./App.css";
 import NavBar from "./components/NavBar";
+import { useAuthContext } from "./contexts/authStore";
+import { TodoProvider } from "./contexts/todoStore";
 
 axios.defaults.baseURL = "http://localhost:5001/";
 axios.defaults.headers.common.accept = "application/json";
@@ -21,8 +23,11 @@ const App = () => {
 
   useEffect(() => {
     const token = Cookies.get("token");
-    setToken(token);
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
+    if (token) {
+      setToken(token);
+      axios.defaults.headers.common.authorization = `Bearer ${token}`;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUserInfo = async () => {
@@ -40,17 +45,26 @@ const App = () => {
       fetchUserInfo();
       axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.token]);
 
   return (
     <BrowserRouter>
       <NavBar />
       <Routes>
-        <Route path="/welcome" element={<WelcomePage />}></Route>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/login" element={<LoginPage />}></Route>
-        <Route path="/signup" element={<SignupPage />}></Route>
-        <Route path="/account" element={<AccountPage />}></Route>
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route
+          path="/"
+          element={
+            <TodoProvider>
+              <Home />
+            </TodoProvider>
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/account" element={<AccountPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

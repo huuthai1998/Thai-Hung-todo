@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useEffect, useState } from "react";
 import Avatar from "../assets/rose.webp";
 import axios from "axios";
@@ -48,16 +47,20 @@ const InputAccount = ({
 };
 
 export default function AccountPage() {
-  const { authContext } = useAuthContext();
   const [info, setInfo] = useState({
     password: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const [selectedImage, setSelectedImage] = useState(null);
+  // const [selectedImage, setSelectedImage] = useState(null);
+
+  const { authContext, setUser } = useAuthContext();
+
   const uploadImgButton = createRef(null);
+
   useEffect(() => {
     setInfo({ ...info, ...authContext.user });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.user]);
 
   const onChangeHandler = (e) => {
@@ -72,13 +75,13 @@ export default function AccountPage() {
       notification.info({
         message: "Successfully changed your user name",
         placement: "top",
-        duration: 1,
+        duration: 2,
       });
+      setUser({ ...authContext.user, username: info.username });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
         placement: "top",
-        duration: 1,
       });
     }
   };
@@ -97,31 +100,33 @@ export default function AccountPage() {
       notification.info({
         message: "Successfully changed your password",
         placement: "top",
-        duration: 1,
+        duration: 2,
       });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
         placement: "top",
-        duration: 1,
       });
     }
   };
 
   const handleUpload = async (event) => {
-    setSelectedImage(event.target.files[0]);
+    // setSelectedImage(event.target.files[0]);
     try {
       await axios.put("/user", { avatar: event.target.files[0] });
     } catch (err) {
-      console.log(err.response?.data?.message || err.message);
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+      });
     }
   };
 
   return (
     <div className="h-screen w-screen p-10">
-      <h1 className="font-bold text-3xl mb-10">Your account</h1>
+      <h1 className="font-semibold text-3xl mb-10">Your account</h1>
       <div className="flex items-center mb-10">
-        <div className="rounded-full h-24 w-24 mr-4">
+        <div className="rounded-full h-24 w-24 mr-6">
           <img
             src={Avatar}
             alt="User Avatar"
@@ -137,11 +142,11 @@ export default function AccountPage() {
         />
         <button
           onClick={() => uploadImgButton.current.click()}
-          className="font-semibold bg-[#EEEEEE] border-[#EEEEEE] border rounded-md w-[120px] p-1 mr-5"
+          className="font-semibold bg-[#EEEEEE] border-[#EEEEEE] border-2 rounded-md py-1 px-2 mr-5"
         >
           Change avatar
         </button>
-        <button className="font-semibold border-[#DB4C3F] border rounded-md w-[120px] p-1 text-[#DB4C3F]">
+        <button className="font-semibold border-xred border rounded-md px-2 py-1 text-xred">
           Remove avatar
         </button>
       </div>
