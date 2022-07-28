@@ -13,8 +13,10 @@ import AccountPage from "./pages/AccountPage";
 import Cookies from "js-cookie";
 import NavBar from "./components/NavBar";
 
-axios.defaults.baseURL =
-  "https://ca-sea-webapp-thai-backend.azurewebsites.net/";
+// axios.defaults.baseURL =
+// "https://ca-sea-webapp-thai-backend.azurewebsites.net/";
+axios.defaults.baseURL = "http://localhost:5001/";
+
 axios.defaults.headers.common.accept = "application/json";
 
 const App = () => {
@@ -22,8 +24,10 @@ const App = () => {
 
   useEffect(() => {
     const token = Cookies.get("token");
-    setToken(token);
-    axios.defaults.headers.common.authorization = `Bearer ${token}`;
+    if (token) {
+      setToken(token);
+      axios.defaults.headers.common.authorization = `Bearer ${token}`;
+    }
   }, []);
 
   const fetchUserInfo = async () => {
@@ -38,8 +42,8 @@ const App = () => {
 
   useEffect(() => {
     if (authContext.token.length > 0) {
-      fetchUserInfo();
       axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+      fetchUserInfo();
     }
   }, [authContext.token]);
 

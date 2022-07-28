@@ -48,6 +48,7 @@ export default function LoginPage() {
         email: info.email,
         password: info.password,
       });
+      console.log(data);
       setToken(data.token);
       axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
       navigate("/");

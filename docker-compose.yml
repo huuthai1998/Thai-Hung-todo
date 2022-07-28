@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - 4000:80
+  db:
+    image: postgres:14.1-alpine
+    container_name: database
+    restart: always
+    environment:
+      - DB_USER=hung
+      - DB_PASSWORD=password
+    ports:
+      - 6000:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    volumes:
+      - /node_modules
+    env_file:
+      - ./backend/.env
+    environment:
+      - DB_USERNAME=hung
+      - DB_PASSWORD=password
+      - NODE_ENV=development
+      - PORT=5001
+      - JWT_SECRET=clocked
+      - DB_HOST=database
+    ports:
+      - 5001:5001
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    volumes:
+      - /node_modules
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_DEVELOPMENT_API_ENDPOINT=/devURL
+    ports:
+      - 3000:3000
+volumes:
+  db:
+    driver: local

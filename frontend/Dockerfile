@@ -1,7 +1,7 @@
 FROM node:16
 
 # Create app directory
-WORKDIR ./
+WORKDIR .
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -15,5 +15,5 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 5001
-CMD [ "node", "./bin/www" ]
+EXPOSE 3000
+CMD [ "npm", "start" ]

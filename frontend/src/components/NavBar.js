@@ -59,7 +59,7 @@ export default function NavBar() {
   const onClickLogo = () => {
     if (!authContext.token) navigate("/welcome");
     else navigate("/");
-  }
+  };
 
   return (
     <nav className="flex justify-between h-[70px] items-center px-10 border-b border-gray-200">
@@ -87,7 +87,7 @@ export default function NavBar() {
           <div className="mr-3 font-semibold">{authContext.user?.username}</div>
           <div className="rounded-full h-10 w-10 mr-2">
             <img
-              src={Avatar}
+              src={authContext.user.avatar || Avatar}
               alt="User Avatar"
               className="rounded-full h-10 w-10 object-cover"
             />

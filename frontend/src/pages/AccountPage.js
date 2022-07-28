@@ -4,6 +4,8 @@ import Avatar from "../assets/rose.webp";
 import axios from "axios";
 import { useAuthContext } from "../contexts/authStore";
 import { notification } from "antd";
+import firebase from "firebase/compat/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const InputAccount = ({
   type,
@@ -56,6 +58,8 @@ export default function AccountPage() {
   });
   const [selectedImage, setSelectedImage] = useState(null);
   const uploadImgButton = createRef(null);
+  const storage = getStorage();
+
   useEffect(() => {
     setInfo({ ...info, ...authContext.user });
   }, [authContext.user]);
@@ -109,21 +113,29 @@ export default function AccountPage() {
   };
 
   const handleUpload = async (event) => {
-    setSelectedImage(event.target.files[0]);
+    event.preventDefault();
     try {
-      await axios.put("/user", { avatar: event.target.files[0] });
+      const storageRef = ref(storage, event.target.files[0].name);
+      // setLoading(true);
+      await uploadBytes(storageRef, event.target.files[0]);
+      const uploaderUrl = await getDownloadURL(
+        ref(storage, event.target.files[0].name)
+      );
+      await axios.put("/user", { avatar: uploaderUrl });
+
+      // setLoading(false);
+      alert("Product has been edited!");
     } catch (err) {
-      console.log(err.response?.data?.message || err.message);
+      console.log(err);
     }
   };
-
   return (
     <div className="h-screen w-screen p-10">
       <h1 className="font-bold text-3xl mb-10">Your account</h1>
       <div className="flex items-center mb-10">
         <div className="rounded-full h-24 w-24 mr-4">
           <img
-            src={Avatar}
+            src={authContext.user.avatar || Avatar}
             alt="User Avatar"
             className="rounded-full h-24 w-24 object-cover"
           />

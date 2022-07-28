@@ -51,7 +51,6 @@ export default function SignupPage() {
         password: info.password,
         username: info.username,
       });
-      console.log(data);
       setToken(data.token);
       axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
       navigate("/");
