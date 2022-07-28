@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
-import { useAuthContext } from "../contexts/authStore";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
 import validator from "validator";
-import InputBox from "../components/InputBox";
+import axios from "axios";
+
 import { notification } from "antd";
+import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+
+import InputBox from "../components/InputBox";
+import { useAuthContext } from "../contexts/authStore";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [info, setInfo] = useState({});
   const { setToken, authContext } = useAuthContext();
-  const navigate = useNavigate();
+
   const onChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
     setInfo({ ...info, [name]: value });
   };
-
-  useEffect(() => {
-    if (authContext.token.length > 0) navigate("/ ");
-  }, [authContext.token]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -53,13 +52,17 @@ export default function LoginPage() {
       axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
       navigate("/");
     } catch (err) {
-      // setError(err.response.data.message);
       notification.error({
-        message: err.response.data.message,
+        message: err.response?.data?.message || err.message,
         placement: "top",
       });
     }
   };
+
+  useEffect(() => {
+    if (authContext.token.length > 0) navigate("/");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authContext.token]);
 
   return (
     <div>
@@ -70,20 +73,20 @@ export default function LoginPage() {
           </h1>
           <InputBox
             name="email"
-            placeholder={"Email"}
+            placeholder="Email"
             icon={faEnvelope}
             onChangeHandler={onChangeHandler}
           />
           <InputBox
             type="password"
             name="password"
-            placeholder={"Password"}
+            placeholder="Password"
             icon={faLock}
             onChangeHandler={onChangeHandler}
           />
           <button
             onClick={submitHandler}
-            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg  bg-xred text-white"
+            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg bg-xred hover:bg-red-500 text-white"
           >
             Log in
           </button>

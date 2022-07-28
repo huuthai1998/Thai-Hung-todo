@@ -32,9 +32,9 @@ const todoReducer = (state, action) => {
 };
 
 const initialState = {
-  todos: [`s`],
-  isLoading: false,
+  todos: [],
 };
+
 const TodoContext = React.createContext({
   todoContext: initialState,
   setTodos: () => {},

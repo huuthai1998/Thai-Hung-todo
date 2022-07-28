@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthProvider } from "./contexts/authStore";
-import { TodoProvider } from "./contexts/todoStore";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "./firebase.config";
 
@@ -13,9 +12,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <TodoProvider>
-        <App />
-      </TodoProvider>
+      <App />
     </AuthProvider>
   </React.StrictMode>
 );

@@ -17,7 +17,8 @@ export default function SignupPage() {
   };
 
   useEffect(() => {
-    if (authContext.token.length > 0) navigate("/ ");
+    if (authContext.token.length > 0) navigate("/");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.token]);
 
   const submitHandler = async (e) => {
@@ -97,7 +98,7 @@ export default function SignupPage() {
           />
           <button
             onClick={submitHandler}
-            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg  bg-xred text-white"
+            className="w-full py-3 px-7 mt-2 rounded-md text-xl font-semibold text-lg bg-xred hover:bg-red-500 text-white"
           >
             Register
           </button>

@@ -25,6 +25,10 @@ const COLORS = {
 };
 const CATEGORY_LIST = ["WORK", "PERSONAL"];
 const PRIORITY_LIST = ["URGENT", "HIGH", "MEDIUM", "LOW"];
+const TAB_STATUS = {
+  IN_PROGRESS: "INPROGRESS",
+  COMPLETED: "COMPLETED",
+};
 
 export {
   SET_TOKEN,
@@ -38,4 +42,5 @@ export {
   CATEGORY_LIST,
   PRIORITY_LIST,
   SET_USER,
+  TAB_STATUS,
 };

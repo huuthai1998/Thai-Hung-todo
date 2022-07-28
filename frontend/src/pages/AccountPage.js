@@ -1,10 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useEffect, useState } from "react";
-import Avatar from "../assets/rose.webp";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import axios from "axios";
+import { LoadingOutlined } from "@ant-design/icons";
+import Avatar from "../assets/rose.webp";
+import { notification, Spin } from "antd";
 import { useAuthContext } from "../contexts/authStore";
-import { notification } from "antd";
-import firebase from "firebase/compat/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const InputAccount = ({
@@ -50,18 +51,28 @@ const InputAccount = ({
 };
 
 export default function AccountPage() {
-  const { authContext } = useAuthContext();
+  const navigate = useNavigate();
+
   const [info, setInfo] = useState({
     password: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const { authContext, setUser } = useAuthContext();
+
   const uploadImgButton = createRef(null);
   const storage = getStorage();
 
   useEffect(() => {
+    if (!authContext.token && !Cookies.get("token")) navigate("/welcome");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authContext.token]);
+
+  useEffect(() => {
     setInfo({ ...info, ...authContext.user });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.user]);
 
   const onChangeHandler = (e) => {
@@ -73,16 +84,16 @@ export default function AccountPage() {
     e.preventDefault();
     try {
       await axios.put("/user", { username: info.username });
+      setUser({ ...authContext.user, username: info.username });
       notification.info({
         message: "Successfully changed your user name",
         placement: "top",
-        duration: 1,
+        duration: 2,
       });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
         placement: "top",
-        duration: 1,
       });
     }
   };
@@ -101,19 +112,19 @@ export default function AccountPage() {
       notification.info({
         message: "Successfully changed your password",
         placement: "top",
-        duration: 1,
+        duration: 2,
       });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
         placement: "top",
-        duration: 1,
       });
     }
   };
 
   const handleUpload = async (event) => {
     event.preventDefault();
+    // setSelectedImage(event.target.files[0]);
     try {
       const storageRef = ref(storage, event.target.files[0].name);
       // setLoading(true);
@@ -122,18 +133,37 @@ export default function AccountPage() {
         ref(storage, event.target.files[0].name)
       );
       await axios.put("/user", { avatar: uploaderUrl });
-
+      setUser({ ...authContext.user, avatar: uploaderUrl });
       // setLoading(false);
-      alert("Product has been edited!");
+      notification.info({
+        message: "Successfully updated avatar",
+        placement: "top",
+      });
     } catch (err) {
-      console.log(err);
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+      });
     }
   };
   return (
     <div className="h-screen w-screen p-10">
-      <h1 className="font-bold text-3xl mb-10">Your account</h1>
+      {/* <Spin
+        spinning={loading}
+        size="large"
+        indicator={
+          <LoadingOutlined
+            style={{
+              fontSize: 24,
+              color: "xred",
+            }}
+            spin
+          />
+        }
+      > */}
+      <h1 className="font-semibold text-3xl mb-10">Your account</h1>
       <div className="flex items-center mb-10">
-        <div className="rounded-full h-24 w-24 mr-4">
+        <div className="rounded-full h-24 w-24 mr-6">
           <img
             src={authContext.user.avatar || Avatar}
             alt="User Avatar"
@@ -149,11 +179,11 @@ export default function AccountPage() {
         />
         <button
           onClick={() => uploadImgButton.current.click()}
-          className="font-semibold bg-[#EEEEEE] border-[#EEEEEE] border rounded-md w-[120px] p-1 mr-5"
+          className="font-semibold bg-[#EEEEEE] border-[#EEEEEE] border-2 rounded-md py-1 px-2 mr-5"
         >
           Change avatar
         </button>
-        <button className="font-semibold border-[#DB4C3F] border rounded-md w-[120px] p-1 text-[#DB4C3F]">
+        <button className="font-semibold border-xred border rounded-md px-2 py-1 text-xred">
           Remove avatar
         </button>
       </div>
@@ -196,6 +226,7 @@ export default function AccountPage() {
         buttonAction={changePassword}
         buttonName={"Change password"}
       />
+      {/* </Spin> */}
     </div>
   );
 }

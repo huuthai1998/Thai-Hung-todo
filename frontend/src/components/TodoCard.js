@@ -1,5 +1,7 @@
-import React from "react";
-import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../constant";
+import { useState } from "react";
+import moment from "moment";
+
+import axios from "axios";
 import {
   Typography,
   Popconfirm,
@@ -15,11 +17,11 @@ import {
   faCircle,
   faFlag,
 } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment";
-import { useState } from "react";
 import { faEdit, faTrashCan } from "@fortawesome/free-regular-svg-icons";
+
 import { useTodoContext } from "../contexts/todoStore";
-import axios from "axios";
+import { COLORS, CATEGORY_LIST, PRIORITY_LIST, TAB_STATUS } from "../constant";
+
 const { Paragraph } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -32,7 +34,7 @@ const styles = {
   circle: {
     border: `4px solid ${COLORS.LIGHT_GRAY}`,
   },
-  props: {
+  todo_props: {
     border: 0,
     fontSize: 14,
     backgroundColor: "white",
@@ -42,10 +44,10 @@ const styles = {
 };
 
 export default function TodoCard(props) {
-  const [isCompleted, setIsCompleted] = useState(props.isCompleted);
   const [curData, setCurData] = useState(props.data);
+  const [isCompleted, setIsCompleted] = useState(props.isCompleted);
   const [isEditing, setIsEditing] = useState(false);
-  const [isEdited, setIsEdited] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
 
   const { editTodo, deleteTodo } = useTodoContext();
 
@@ -58,7 +60,7 @@ export default function TodoCard(props) {
     size: "large",
     onChange: (ref) => {
       setCurData({ ...curData, content: ref.target.value });
-      setIsEdited(true);
+      setIsChanged(true);
     },
   };
 
@@ -71,11 +73,10 @@ export default function TodoCard(props) {
         notification.info({
           message: data.message,
           placement: "top",
-          duration: 1,
+          duration: 2,
         });
       }
     } catch (err) {
-      console.log(err);
       notification.error({
         message: err.message,
         placement: "top",
@@ -85,7 +86,7 @@ export default function TodoCard(props) {
   };
 
   const handleEdit = async () => {
-    if (!isEdited) {
+    if (!isChanged) {
       setIsEditing(false);
       return;
     }
@@ -107,7 +108,6 @@ export default function TodoCard(props) {
           duration: 2,
         });
       } catch (err) {
-        console.log(err);
         notification.error({
           message: err.message,
           placement: "top",
@@ -120,13 +120,15 @@ export default function TodoCard(props) {
         duration: 2,
       });
     }
-    setIsEdited(false);
+    setIsChanged(false);
   };
 
   const changeStatus = async () => {
     if (isEditing) return;
     console.log("Change todo status:", curData.id);
-    const newStatus = !isCompleted ? "COMPLETED" : "INPROGRESS";
+    const newStatus = !isCompleted
+      ? TAB_STATUS.COMPLETED
+      : TAB_STATUS.IN_PROGRESS;
     if (isCompleted) console.log("Uncheck");
     else console.log("Check");
     try {
@@ -149,8 +151,7 @@ export default function TodoCard(props) {
         });
       }
     } catch (err) {
-      console.log(err);
-      notification.info({
+      notification.error({
         message: err.message,
         placement: "top",
       });
@@ -164,9 +165,9 @@ export default function TodoCard(props) {
 
   return (
     <div className="min-h-[100px] max-w-6xl grid grid-cols-12 bg-white rounded-lg shadow-[0_0_8px_2px_rgba(0,0,0,0.05)]">
-      <div className="md:col-span-1 h-full grid place-items-center">
+      <div className="col-span-1 grid h-full place-items-center">
         <button
-          className="rounded-full w-10 h-10"
+          className="rounded-full md:w-10 md:h-10 w-7 h-7"
           style={isCompleted ? styles.checkCircle : styles.circle}
           onClick={changeStatus}
         >
@@ -187,7 +188,7 @@ export default function TodoCard(props) {
               <Paragraph
                 ellipsis={{
                   rows: 2,
-                  // -- remove this will improve ux
+                  // // could slow down ui
                   // expandable: true,
                   // symbol: "more",
                 }}
@@ -232,7 +233,7 @@ export default function TodoCard(props) {
                     defaultValue={moment(curData.dueDate)}
                     onChange={(value) => {
                       setCurData({ ...curData, dueDate: value });
-                      setIsEdited(true);
+                      setIsChanged(true);
                     }}
                     disabledDate={disabledDate}
                   />
@@ -242,7 +243,9 @@ export default function TodoCard(props) {
                       icon={faCalendarDays}
                       color={COLORS.TIME}
                     />
-                    <button style={{ ...styles.props, color: COLORS.TIME }}>
+                    <button
+                      style={{ ...styles.todo_props, color: COLORS.TIME }}
+                    >
                       {moment(curData.dueDate).format("ddd MMM DD YYYY HH:mm")}
                     </button>
                   </>
@@ -255,7 +258,7 @@ export default function TodoCard(props) {
                     className="w-32"
                     onChange={(value) => {
                       setCurData({ ...curData, category: value });
-                      setIsEdited(true);
+                      setIsChanged(true);
                     }}
                   >
                     {CATEGORY_LIST.map((val) => (
@@ -267,7 +270,9 @@ export default function TodoCard(props) {
                 ) : (
                   <>
                     <FontAwesomeIcon icon={faCircle} color={COLORS.BG_BLUE} />
-                    <button style={{ ...styles.props, color: COLORS.CATEGORY }}>
+                    <button
+                      style={{ ...styles.todo_props, color: COLORS.CATEGORY }}
+                    >
                       {curData.category}
                     </button>
                   </>
@@ -280,7 +285,7 @@ export default function TodoCard(props) {
                     className="w-32"
                     onChange={(value) => {
                       setCurData({ ...curData, priority: value });
-                      setIsEdited(true);
+                      setIsChanged(true);
                     }}
                   >
                     {PRIORITY_LIST.map((val) => (
@@ -301,7 +306,7 @@ export default function TodoCard(props) {
                     />
                     <button
                       style={{
-                        ...styles.props,
+                        ...styles.todo_props,
                         color: COLORS[curData.priority],
                       }}
                     >
