@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { DatePicker, Select, Input, notification } from "antd";
 import moment from "moment";
+import axios from "axios";
+
+import { DatePicker, Select, Input, notification } from "antd";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST, TAB_STATUS } from "../constant";
 import { useTodoContext } from "../contexts/todoStore";
-import axios from "axios";
+
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -63,6 +65,11 @@ export default function AddTodoModal({ setShowAddTodo }) {
     }
   };
 
+  const disabledDate = (current) => {
+    // Can not select days before today
+    return current && current < moment().add(-1, "days");
+  };
+
   return (
     <div
       className="relative z-10"
@@ -71,7 +78,7 @@ export default function AddTodoModal({ setShowAddTodo }) {
       aria-modal="true"
     >
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-      <div className="fixed z-10 inset-0 overflow-y-aut">
+      <div className="fixed z-10 inset-0 overflow-y-auto">
         <div className="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
           <div className="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -98,6 +105,7 @@ export default function AddTodoModal({ setShowAddTodo }) {
                               onChange={(value) => {
                                 setDataToAdd({ ...dataToAdd, dueDate: value });
                               }}
+                              disabledDate={disabledDate}
                             />
                           </span>
                           <span className="mr-4">
