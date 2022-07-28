@@ -10,25 +10,19 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  sonarqube:
+    name: SonarQube Trigger
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Checking out
+        uses: actions/checkout@master
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: "**/package-log.json"
-      - run: npm ci
-        working-directory: ./backend/
-      - run: npm run build --if-present
-        working-directory: ./backend/
-      - run: npm test
-        working-directory: ./backend/
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: kitabisa/sonarqube-action@v1.2.0
+        with:
+          host: ${{ secrets.SONARQUBE_HOST }}
+          login: ${{ secrets.SONARQUBE_TOKEN }}
+          projectBaseDir: "src/"
+          projectKey: "my-custom-project"
