@@ -1,23 +1,22 @@
 import React, { useState } from "react";
 import { DatePicker, Select, Input, notification } from "antd";
 import moment from "moment";
-import { COLORS, CATEGORY_LIST, PRIORITY_LIST } from "../constant";
+import { COLORS, CATEGORY_LIST, PRIORITY_LIST, TAB_STATUS } from "../constant";
 import { useTodoContext } from "../contexts/todoStore";
 import axios from "axios";
 const { Option } = Select;
 const { TextArea } = Input;
 
-export default function AddTodoModal(props) {
+export default function AddTodoModal({ setShowAddTodo }) {
   const [dataToAdd, setDataToAdd] = useState({
     content: "",
     dueDate: moment(),
-    status: "INPROGRESS",
+    status: TAB_STATUS.IN_PROGRESS,
     category: CATEGORY_LIST[0],
     priority: PRIORITY_LIST[0],
   });
-  const { addTodo } = useTodoContext();
 
-  const setShowAddTodo = props.setShowAddTodo;
+  const { addTodo } = useTodoContext();
 
   const sharedInputProps = {
     style: {
@@ -50,9 +49,8 @@ export default function AddTodoModal(props) {
           duration: 2,
         });
       } catch (err) {
-        console.log(err);
-        notification.info({
-          message: err.message,
+        notification.error({
+          message: err.response?.data?.message || err.message,
           placement: "top",
         });
       }
