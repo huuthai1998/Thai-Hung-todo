@@ -24,5 +24,3 @@ jobs:
         with:
           host: ${{ secrets.SONARQUBE_HOST }}
           login: ${{ secrets.SONARQUBE_TOKEN }}
-          projectBaseDir: "backend/"
-          projectKey: "my-custom-project"
