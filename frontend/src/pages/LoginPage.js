@@ -48,7 +48,7 @@ export default function LoginPage() {
         password: info.password,
       });
       setToken(data.token);
-      // axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
+      axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
       navigate("/");
     } catch (err) {
       notification.error({

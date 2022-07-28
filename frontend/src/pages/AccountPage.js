@@ -3,6 +3,8 @@ import Avatar from "../assets/rose.webp";
 import axios from "axios";
 import { useAuthContext } from "../contexts/authStore";
 import { notification } from "antd";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const InputAccount = ({
   type,
@@ -47,6 +49,8 @@ const InputAccount = ({
 };
 
 export default function AccountPage() {
+  const navigate = useNavigate();
+
   const [info, setInfo] = useState({
     password: "",
     newPassword: "",
@@ -57,6 +61,11 @@ export default function AccountPage() {
   const { authContext, setUser } = useAuthContext();
 
   const uploadImgButton = createRef(null);
+
+  useEffect(() => {
+    if (!authContext.token && !Cookies.get("token")) navigate("/welcome");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authContext.token]);
 
   useEffect(() => {
     setInfo({ ...info, ...authContext.user });

@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { TAB_STATUS } from "../constant";
 
-export default function Sidebar(props) {
+export default function Sidebar({ status }) {
   return (
     <aside className="w-64 bg-[#FAFAFA] min-h-screen hidden md:block">
       <ul className="space-y-2">
@@ -17,7 +17,7 @@ export default function Sidebar(props) {
               search: "?filter=inprogress",
             }}
             className={`w-full flex items-center py-3 pl-[41px] my-4 text-base text-black hover:text-black font-medium hover:bg-gray-200 ${
-              props.status === TAB_STATUS.COMPLETED ? null : "bg-gray-200"
+              status === TAB_STATUS.COMPLETED ? null : "bg-gray-200"
             }`}
           >
             <FontAwesomeIcon
@@ -35,7 +35,7 @@ export default function Sidebar(props) {
               search: "?filter=completed",
             }}
             className={`w-full flex items-center py-3 pl-[41px] my-4 text-base text-black hover:text-black font-medium hover:bg-gray-200 ${
-              props.status === TAB_STATUS.COMPLETED ? "bg-gray-200" : null
+              status === TAB_STATUS.COMPLETED ? "bg-gray-200" : null
             }`}
           >
             <FontAwesomeIcon

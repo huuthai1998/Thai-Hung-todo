@@ -21,6 +21,15 @@ axios.defaults.headers.common.accept = "application/json";
 const App = () => {
   const { authContext, setUser, setToken } = useAuthContext();
 
+  const fetchUserInfo = async () => {
+    try {
+      const { data } = await axios.get("/user");
+      setUser(data.user);
+    } catch (err) {
+      console.log(err?.response?.data?.message);
+    }
+  };
+
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
@@ -30,21 +39,9 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchUserInfo = async () => {
-    try {
-      const { data } = await axios.get("/user");
-      setUser(data.user);
-    } catch (err) {
-      console.log(err?.response?.data?.message);
-      setToken("");
-    }
-  };
-
   useEffect(() => {
-    if (authContext.token.length > 0) {
-      fetchUserInfo();
-      axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
-    }
+    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
+    if (authContext.token.length > 0) fetchUserInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.token]);
 

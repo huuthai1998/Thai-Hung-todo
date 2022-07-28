@@ -8,52 +8,18 @@ import {
   faUserCircle,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Dropdown, Menu } from "antd";
 import Avatar from "../assets/rose.webp";
 import Logo from "../assets/Logo.png";
 
 import { useAuthContext } from "../contexts/authStore";
 
-const menu = (handleLogout) => (
-  <Menu
-    items={[
-      {
-        key: "1",
-        label: (
-          <Link to="/account" className="text-base w-28">
-            <FontAwesomeIcon
-              icon={faUserCircle}
-              className="mx-2 text-gray-600"
-            />
-            Details
-          </Link>
-        ),
-      },
-      {
-        type: "divider",
-      },
-      {
-        key: "2",
-        label: (
-          <div onClick={handleLogout} className="text-base w-28">
-            <FontAwesomeIcon
-              icon={faSignOutAlt}
-              className="mx-2 text-gray-600"
-            />
-            Log out
-          </div>
-        ),
-      },
-    ]}
-  />
-);
-
 export default function NavBar() {
-  const { authContext, setToken } = useAuthContext();
+  const { authContext, setToken, setUser } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     setToken("");
+    setUser({});
     Cookies.remove("token");
     navigate("/welcome");
   };
@@ -87,20 +53,41 @@ export default function NavBar() {
       ) : (
         <div className="flex items-center relative">
           <div className="mr-3 font-semibold">{authContext.user?.username}</div>
-          <div className="rounded-full h-10 w-10 mr-2">
+          <div className="rounded-full h-10 w-10">
             <img
               src={Avatar}
               alt="User Avatar"
               className="rounded-full h-10 w-10 object-cover"
             />
           </div>
-          <Dropdown
-            overlay={menu(handleLogout)}
-            placement="bottomRight"
-            className="cursor-pointer"
-          >
-            <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
-          </Dropdown>
+          <div className="dropdown group inline-block relative">
+            <button className="text-gray-700 font-semibold px-2 items-center">
+              <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
+            </button>
+            <ul className="dropdown-menu z-10 group-hover:block absolute hidden rounded-md border border-gray-200 bg-white right-0">
+              <li className="hover:bg-gray-200 p-1">
+                <Link
+                  to="/account"
+                  className="text-base text-black hover:text-black w-28"
+                >
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    className="mx-2 text-gray-600"
+                  />
+                  Details
+                </Link>
+              </li>
+              <li className="hover:bg-gray-200 p-1">
+                <div onClick={handleLogout} className="text-base w-28">
+                  <FontAwesomeIcon
+                    icon={faSignOutAlt}
+                    className="mx-2 text-gray-600"
+                  />
+                  Log out
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       )}
     </nav>

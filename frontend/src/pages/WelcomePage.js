@@ -15,7 +15,7 @@ export default function WelcomePage() {
         </div>
         <a
           href="/signup"
-          class="font-semibold text-xl border-b border-xred hover:text-white rounded-md py-2 px-8 bg-xred hover:bg-red-500 text-white"
+          className="font-semibold text-xl border-b border-xred hover:text-white rounded-md py-2 px-8 bg-xred hover:bg-red-500 text-white"
         >
           Get started
         </a>
