@@ -1,6 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
-const { uuid } = require('uuidv4');
+const { uuid } = require("uuidv4");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       id: DataTypes.UUID,
       username: DataTypes.STRING,
-      email: DataTypes.STRING,
       email: {
         allowNull: false,
         type: DataTypes.STRING,
@@ -30,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "User",
     }
   );
-  User.beforeCreate(user => {
+  User.beforeCreate((user) => {
     user.id = uuid();
     user.createdAt = new Date();
   });
