@@ -34,7 +34,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: "**/package-lock.json"
       - run: npm install -g depcheck
-      - run: depcheck ./
+      - run: depcheck ./ --ignores="debug,jade,jest,joi,nodemon,pg,sequelize-cli"
         working-directory: backend
       - run: depcheck ./
         working-directory: frontend
