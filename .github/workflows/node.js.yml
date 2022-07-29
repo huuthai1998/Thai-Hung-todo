@@ -15,10 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: "npm"
-        cache-dependency-path: "**/package-lock.json"
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
       - run: npm install -g depcheck
       - run: depcheck ./
         working-directory: backend
