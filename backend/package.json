@@ -7,7 +7,7 @@
     "start-dev": "nodemon index.js",
     "migrate": "npx sequelize-cli db:migrate",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate",
-    "test": "cross-env NODE_ENV=test jest --coverage --testTimeout=10000 --detectOpenHandles --forceExit",
+    "test": "cross-env NODE_ENV=test SALT_ROUNDS=10 JWT_SECRET_KEY=FORTESTING jest --coverage --testTimeout=10000 --detectOpenHandles --forceExit",
     "pretest": "cross-env NODE_ENV=test npm run migrate:reset"
   },
   "dependencies": {

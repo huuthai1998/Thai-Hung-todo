@@ -10,6 +10,18 @@ on:
     branches: ["main"]
 
 jobs:
+   scan:
+    name: dependency check
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm install -g depcheck
+        working-directory: backend
+      - run: depcheck ./
+        working-directory: backend
+      - run: npm install -g depcheck
+        working-directory: frontend
+      - run: depcheck ./
+        working-directory: frontend
   scan:
     name: gitleaks
     runs-on: ubuntu-latest
