@@ -12,16 +12,16 @@ on:
     outputs:
       sonarqube:
         description: "The sonarqube job output"
-        value: ${{ jobs.my_job.outputs.sonarqube }}
+        value: ${{ jobs.sonarqube.outputs.sonarqube }}
       depcheck:
         description: "The depcheck job output"
-        value: ${{ jobs.my_job.outputs.depcheck }}
+        value: ${{ jobs.depcheck.outputs.depcheck }}
       build:
         description: "The build job output"
-        value: ${{ jobs.my_job.outputs.build }}
+        value: ${{ jobs.build.outputs.build }}
       gitleaks:
         description: "The gitleaks job output"
-        value: ${{ jobs.my_job.outputs.gitleaks }}
+        value: ${{ jobs.gitleaks.outputs.gitleaks }}
 
 jobs:
   sonarqube:
@@ -88,3 +88,8 @@ jobs:
       - run: docker compose up -d
       - run: npm run build --if-present
       - run: npm test
+  logs:
+    runs-on: ubuntu-latest
+    needs: [build, depcheck, gitleaks, sonarqube]
+    steps:
+      - run: echo ${{needs.build.outputs.build}} ${{needs.depcheck.outputs.depcheck}}
