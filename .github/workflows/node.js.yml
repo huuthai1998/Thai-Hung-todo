@@ -7,6 +7,21 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      sonarqube:
+        description: "The sonarqube job output"
+        value: ${{ jobs.my_job.outputs.sonarqube }}
+      depcheck:
+        description: "The depcheck job output"
+        value: ${{ jobs.my_job.outputs.depcheck }}
+      build:
+        description: "The build job output"
+        value: ${{ jobs.my_job.outputs.build }}
+      gitleaks:
+        description: "The gitleaks job output"
+        value: ${{ jobs.my_job.outputs.gitleaks }}
 
 jobs:
   sonarqube:
@@ -56,10 +71,9 @@ jobs:
       run:
         working-directory: backend
     strategy:
-      matrix:
+      unittest:
         node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
