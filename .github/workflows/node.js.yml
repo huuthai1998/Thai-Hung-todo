@@ -19,12 +19,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: "npm"
         cache-dependency-path: "**/package-lock.json"
-      - run: npm install depcheck
-        working-directory: backend
+      - run: npm install -g depcheck
       - run: depcheck ./
         working-directory: backend
-      - run: npm install depcheck
-        working-directory: frontend
       - run: depcheck ./
         working-directory: frontend
   scan:
