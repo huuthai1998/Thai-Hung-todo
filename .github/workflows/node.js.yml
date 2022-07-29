@@ -36,7 +36,7 @@ jobs:
       - run: npm install -g depcheck
       - run: depcheck ./ --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli"
         working-directory: backend
-      - run: depcheck ./ --ignores="cross-env"
+      - run: depcheck ./ --ignores="react-router,eslint-config-react-app"
         working-directory: frontend
 
   gitleaks:
@@ -69,6 +69,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: "**/package-lock.json"
       - run: npm ci
+      - run: npm i pg
+        working-directory: backend
       - run: docker compose up -d
       - run: npm run build --if-present
       - run: npm test
