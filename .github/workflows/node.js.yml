@@ -9,7 +9,7 @@ on:
     branches: ["main"]
 
 jobs:
-   depcheck:
+  depcheck:
     name: dependency check
     runs-on: ubuntu-latest
     steps:
