@@ -36,7 +36,7 @@ jobs:
       - run: npm install -g depcheck
       - run: depcheck ./ --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli"
         working-directory: backend
-      - run: depcheck ./ --ignores="react-router,eslint-config-react-app"
+      - run: depcheck ./ --ignores="devDependencies,react-router,eslint-config-react-app"
         working-directory: frontend
 
   gitleaks:
