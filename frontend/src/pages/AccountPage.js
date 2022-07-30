@@ -151,22 +151,22 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (loading) {
-      setTimeout(() => {
-        setLoading(false);
-        switch (option) {
-          case CHANGE_OPTIONS.AVATAR:
-            changeAvatar();
-            break;
-          case CHANGE_OPTIONS.USERNAME:
-            changeUsername();
-            break;
-          case CHANGE_OPTIONS.PASSWORD:
-            changePassword();
-            break;
-          default:
-            console.log("nothing change");
-        }
-      }, 500);
+      // setTimeout(() => {
+      setLoading(false);
+      switch (option) {
+        case CHANGE_OPTIONS.AVATAR:
+          changeAvatar();
+          break;
+        case CHANGE_OPTIONS.USERNAME:
+          changeUsername();
+          break;
+        case CHANGE_OPTIONS.PASSWORD:
+          changePassword();
+          break;
+        default:
+          console.log("nothing change");
+      }
+      // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);

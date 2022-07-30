@@ -73,10 +73,10 @@ export default function AddTodoModal({ setShowAddTodo }) {
 
   useEffect(() => {
     if (loading) {
-      setTimeout(() => {
-        setLoading(false);
-        handleAdd();
-      }, 500);
+      // setTimeout(() => {
+      setLoading(false);
+      handleAdd();
+      // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);

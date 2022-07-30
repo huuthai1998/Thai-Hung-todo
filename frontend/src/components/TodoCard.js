@@ -156,22 +156,22 @@ export default function TodoCard(props) {
 
   useEffect(() => {
     if (loading) {
-      setTimeout(() => {
-        setLoading(false);
-        switch (option) {
-          case HANDLE_OPTIONS.EDIT_TODO:
-            handleEdit();
-            break;
-          case HANDLE_OPTIONS.DELETE_TODO:
-            handleDelete();
-            break;
-          case HANDLE_OPTIONS.CHANGE_STATUS:
-            handleChangeStatus();
-            break;
-          default:
-            console.log("do nothing");
-        }
-      }, 500);
+      // setTimeout(() => {
+      setLoading(false);
+      switch (option) {
+        case HANDLE_OPTIONS.EDIT_TODO:
+          handleEdit();
+          break;
+        case HANDLE_OPTIONS.DELETE_TODO:
+          handleDelete();
+          break;
+        case HANDLE_OPTIONS.CHANGE_STATUS:
+          handleChangeStatus();
+          break;
+        default:
+          console.log("do nothing");
+      }
+      // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);

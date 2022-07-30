@@ -49,11 +49,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (loading) {
-      setTimeout(() => {
-        setLoading(false);
-        const loginStatus = handleLogin();
-        if (loginStatus === true) navigate("/");
-      }, 500);
+      // setTimeout(() => {
+      setLoading(false);
+      const loginStatus = handleLogin();
+      if (loginStatus === true) navigate("/");
+      // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);

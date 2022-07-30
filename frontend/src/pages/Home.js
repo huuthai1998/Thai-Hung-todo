@@ -60,10 +60,10 @@ export default function Home() {
       axios.defaults.headers.common.authorization = `Bearer ${Cookies.get(
         "token"
       )}`;
-      setTimeout(() => {
-        fetchTodos();
-        setLoading(false);
-      }, 500);
+      // setTimeout(() => {
+      fetchTodos();
+      setLoading(false);
+      // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.token]);
