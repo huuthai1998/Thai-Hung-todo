@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import axios from "axios";
 
 import { DatePicker, Select, Input, notification } from "antd";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST, TAB_STATUS } from "../constant";
 import { useTodoContext } from "../contexts/todoStore";
+import Spinner from "./Spinner";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -17,6 +18,7 @@ export default function AddTodoModal({ setShowAddTodo }) {
     category: CATEGORY_LIST[0],
     priority: PRIORITY_LIST[0],
   });
+  const [loading, setLoading] = useState(false);
 
   const { addTodo } = useTodoContext();
 
@@ -37,38 +39,47 @@ export default function AddTodoModal({ setShowAddTodo }) {
 
   const handleAdd = async () => {
     console.log("Add todo:", dataToAdd);
-    if (dataToAdd.content && dataToAdd.content.trim().length > 0) {
-      try {
-        dataToAdd.content = dataToAdd.content.trim();
-        const { status, data } = await axios.post("/todo/", dataToAdd);
-        if (status === 201) {
-          addTodo(data.data);
-          setShowAddTodo(false);
-        }
-        notification.info({
-          message: data.message,
-          placement: "top",
-          duration: 2,
-        });
-      } catch (err) {
-        notification.error({
-          message: err.response?.data?.message || err.message,
-          placement: "top",
-        });
+    try {
+      if (!dataToAdd.content || dataToAdd.content.trim().length <= 0)
+        throw new Error("Please enter content of task");
+      dataToAdd.content = dataToAdd.content.trim();
+      const { status, data } = await axios.post("/todo/", dataToAdd);
+      if (status === 201) {
+        addTodo(data.data);
+        setShowAddTodo(false);
       }
-    } else {
       notification.info({
-        message: "Task content can't be empty",
+        message: data.message,
         placement: "top",
         duration: 2,
       });
+    } catch (err) {
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+      });
     }
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+    setLoading(true);
   };
 
   const disabledDate = (current) => {
     // Can not select days before today
     return current && current < moment().add(-1, "days");
   };
+
+  useEffect(() => {
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+        handleAdd();
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   return (
     <div
@@ -77,6 +88,7 @@ export default function AddTodoModal({ setShowAddTodo }) {
       role="dialog"
       aria-modal="true"
     >
+      {loading && <Spinner />}
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div className="fixed z-10 inset-0 overflow-y-auto">
         <div className="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
@@ -152,7 +164,7 @@ export default function AddTodoModal({ setShowAddTodo }) {
             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                onClick={handleAdd}
+                onClick={submitHandler}
                 className="w-full inline-flex justify-center rounded-md border shadow-sm px-4 py-2 bg-xred text-base font-medium text-white hover:bg-red-600 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Add

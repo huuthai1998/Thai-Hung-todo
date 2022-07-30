@@ -1,10 +1,13 @@
 import React, { createRef, useEffect, useState } from "react";
-import Avatar from "../assets/rose.webp";
-import axios from "axios";
-import { useAuthContext } from "../contexts/authStore";
-import { notification } from "antd";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import axios from "axios";
+
+import Avatar from "../assets/rose.webp";
+import { notification } from "antd";
+
+import { useAuthContext } from "../contexts/authStore";
+import Spinner from "../components/Spinner";
 
 const InputAccount = ({
   type,
@@ -48,6 +51,12 @@ const InputAccount = ({
   );
 };
 
+const CHANGE_OPTIONS = {
+  AVATAR: "AVATAR",
+  USERNAME: "USERNAME",
+  PASSWORD: "PASSWORD",
+};
+
 export default function AccountPage() {
   const navigate = useNavigate();
 
@@ -56,7 +65,9 @@ export default function AccountPage() {
     newPassword: "",
     confirmPassword: "",
   });
-  // const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState();
+  const [option, setOption] = useState("");
 
   const { authContext, setUser } = useAuthContext();
 
@@ -72,13 +83,12 @@ export default function AccountPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.user]);
 
-  const onChangeHandler = (e) => {
+  const onInputChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
     setInfo({ ...info, [name]: value });
   };
 
-  const updateUsername = async (e) => {
-    e.preventDefault();
+  const changeUsername = async () => {
     try {
       await axios.put("/user", { username: info.username });
       notification.info({
@@ -95,13 +105,12 @@ export default function AccountPage() {
     }
   };
 
-  const changePassword = async (e) => {
-    e.preventDefault();
+  const changePassword = async () => {
     try {
       if (info.password?.length === 0 || info.newPassword?.length === 0)
-        throw Error(`Please input your password`);
+        throw new Error("Please input your passwords");
       if (info.confirmPassword !== info.newPassword)
-        throw Error(`Passwords don't match`);
+        throw new Error("Passwords don't match");
       await axios.put("/user", {
         oldPassword: info.password,
         newPassword: info.newPassword,
@@ -119,10 +128,10 @@ export default function AccountPage() {
     }
   };
 
-  const handleUpload = async (event) => {
+  const changeAvatar = async () => {
     // setSelectedImage(event.target.files[0]);
     try {
-      await axios.put("/user", { avatar: event.target.files[0] });
+      await axios.put("/user", { avatar: imageFile });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
@@ -131,8 +140,40 @@ export default function AccountPage() {
     }
   };
 
+  const submitHandler = (event, opt) => {
+    event.preventDefault();
+    if (event.target?.files?.[0]) {
+      setImageFile(event.target.files[0]);
+    }
+    setOption(opt);
+    setLoading(true);
+  };
+
+  useEffect(() => {
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+        switch (option) {
+          case CHANGE_OPTIONS.AVATAR:
+            changeAvatar();
+            break;
+          case CHANGE_OPTIONS.USERNAME:
+            changeUsername();
+            break;
+          case CHANGE_OPTIONS.PASSWORD:
+            changePassword();
+            break;
+          default:
+            console.log("nothing change");
+        }
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   return (
     <div className="h-screen w-screen p-10">
+      {loading && <Spinner />}
       <h1 className="font-semibold text-3xl mb-10">Your account</h1>
       <div className="flex items-center mb-10">
         <div className="rounded-full h-24 w-24 mr-6">
@@ -147,7 +188,7 @@ export default function AccountPage() {
           style={{ display: "none" }}
           type="file"
           name="myImage"
-          onChange={handleUpload}
+          onChange={(event) => submitHandler(event, CHANGE_OPTIONS.AVATAR)}
         />
         <button
           onClick={() => uploadImgButton.current.click()}
@@ -161,12 +202,12 @@ export default function AccountPage() {
       </div>
       <InputAccount
         defaultValue={info.username}
-        buttonAction={updateUsername}
+        buttonAction={(event) => submitHandler(event, CHANGE_OPTIONS.USERNAME)}
         buttonName={"Update"}
         name="username"
         placeholder={"User name"}
         label={"User name"}
-        onChangeHandler={onChangeHandler}
+        onChangeHandler={onInputChangeHandler}
       />
       <InputAccount
         defaultValue={info.email}
@@ -175,27 +216,26 @@ export default function AccountPage() {
         name="email"
         placeholder={"Email"}
         label={"Email"}
-        onChangeHandler={onChangeHandler}
       />
       <InputAccount
         type="password"
         name="password"
         placeholder={"Current password"}
         label={"Password"}
-        onChangeHandler={onChangeHandler}
+        onChangeHandler={onInputChangeHandler}
       />
       <InputAccount
         type="password"
         name="newPassword"
         placeholder={"New password"}
-        onChangeHandler={onChangeHandler}
+        onChangeHandler={onInputChangeHandler}
       />
       <InputAccount
         type="password"
         name="confirmPassword"
         placeholder={"Confirm new password"}
-        onChangeHandler={onChangeHandler}
-        buttonAction={changePassword}
+        onChangeHandler={onInputChangeHandler}
+        buttonAction={(event) => submitHandler(event, CHANGE_OPTIONS.PASSWORD)}
         buttonName={"Change password"}
       />
     </div>
