@@ -1,17 +1,25 @@
 const bcrypt = require("bcrypt");
 var logger = require("../utils/logger");
-var db = require("../models");
+var db = require("../../database/models");
 const { signToken } = require("../utils/jwt");
+const {
+  getUserByEmail,
+  createUser,
+  updateUser,
+} = require("../services/user.service");
 const saltRounds = parseInt(process.env.SALT_ROUNDS);
 const User = db.user;
 
-exports.sign_in = async (req, res, next) => {
+exports.signIn = async (req, res, next) => {
   try {
+    logger.info("Executing Sign in controller");
     const { email, password } = req.body;
-    const user = await User.findByPk(email);
-    if (!user) throw new Error("Email is incorrect");
+    const user = await getUserByEmail(email);
+    if (!user) return res.status(401).send({ message: "User does not exist" });
+    logger.info("Validating password");
     const passwordIsMatch = await bcrypt.compare(password, user.password);
     if (!passwordIsMatch) throw new Error("Password is incorrect");
+    logger.info("Signing token");
     const token = signToken(email, saltRounds);
     res.status(200).send({ token });
   } catch (err) {
@@ -20,19 +28,23 @@ exports.sign_in = async (req, res, next) => {
   }
 };
 
-exports.sign_up = async (req, res, next) => {
+exports.signUp = async (req, res, next) => {
   try {
+    logger.info("Executing Sign up controller");
     const { email, password, username } = req.body;
-    const user = await User.findByPk(email);
+    const user = await getUserByEmail(email);
     if (user) {
+      logger.info("This email has already been taken");
       res.status(409).send({ message: "This email has already been taken" });
     } else {
+      logger.info("Hashing password");
       const hashPassword = await bcrypt.hash(password, saltRounds);
-      await User.create({
+      await createUser({
         email,
         username,
         password: hashPassword,
       });
+      logger.info("Signing token");
       const token = signToken(email);
       res.status(200).send({ token });
     }
@@ -42,11 +54,12 @@ exports.sign_up = async (req, res, next) => {
   }
 };
 
-exports.get_user = async (req, res, next) => {
+exports.getUser = async (req, res, next) => {
   try {
+    logger.info("Executing Get user controller");
     const { email: payloadEmail } = res.locals;
-    const user = await User.findByPk(payloadEmail);
-    if (!user) throw new Error("User does not exist");
+    const user = await getUserByEmail(payloadEmail);
+    if (!user) return res.status(401).send({ message: "User does not exist" });
     const { username, email, avatar } = user;
     res.status(200).send({ user: { username, email, avatar } });
   } catch (err) {
@@ -55,24 +68,27 @@ exports.get_user = async (req, res, next) => {
   }
 };
 
-exports.edit_user = async (req, res, next) => {
+exports.editUser = async (req, res, next) => {
   try {
+    logger.info("Executing Edit user controller");
     const { username, avatar, newPassword, oldPassword } = req.body;
     const { email } = res.locals;
-    const user = await User.findByPk(email);
-    if (!user) throw new Error("User does not exist");
+    let user = await getUserByEmail(email);
+    if (!user) return res.status(401).send({ message: "User does not exist" });
 
     if (newPassword) {
+      logger.info("Validating password");
       const passwordIsMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!passwordIsMatch)
+      if (!passwordIsMatch) {
+        logger.info("Password is incorrect");
         return res.status(403).send({ message: "Password is incorrect" });
+      }
+      logger.info("Hashing password");
       const hashPassword = await bcrypt.hash(newPassword, saltRounds);
       user.password = hashPassword;
     }
 
-    user.username = username || user.username;
-    user.avatar = avatar || user.avatar;
-    await user.save();
+    await updateUser(user, username, avatar);
     res.status(200).send({
       user: {
         username: user.username,
@@ -82,6 +98,6 @@ exports.edit_user = async (req, res, next) => {
     });
   } catch (err) {
     logger.error(err);
-    res.status(401).send({ message: err.message });
+    res.status(500).send({ message: err.message });
   }
 };

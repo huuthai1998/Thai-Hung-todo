@@ -1,10 +1,11 @@
-const app = require("../app.js");
+const app = require("../../src/app");
 const request = require("supertest");
 
 let test = {
   token: "",
   todoID: "",
-  wrong_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1bmdAZ21haWwuY29tIn0.cLS7izFOxGm1rvqFm_v7HBvRLFpwma9rskIC6t84fzM"
+  wrong_token:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1bmdAZ21haWwuY29tIn0.cLS7izFOxGm1rvqFm_v7HBvRLFpwma9rskIC6t84fzM",
 };
 
 describe("Todo endpoints test", () => {
@@ -23,7 +24,10 @@ describe("Todo endpoints test", () => {
 
     const res = await request(app)
       .get("/todo/")
-      .set({ Accept: "application/json", Authorization: `Bearer ${test.token}` })
+      .set({
+        Accept: "application/json",
+        Authorization: `Bearer ${test.token}`,
+      })
       .send();
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("message");
@@ -56,7 +60,7 @@ describe("Todo endpoints test", () => {
         Accept: "application/json",
         Authorization: `Bearer ${test.token}`,
       })
-      .send({status: "wrong type",});
+      .send({ status: "wrong type" });
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty("message");
   });
@@ -64,7 +68,10 @@ describe("Todo endpoints test", () => {
   it("should test get all todos", async () => {
     const res = await request(app)
       .get("/todo/")
-      .set({ Accept: "application/json", Authorization: `Bearer ${test.token}` })
+      .set({
+        Accept: "application/json",
+        Authorization: `Bearer ${test.token}`,
+      })
       .send();
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("data");
@@ -121,11 +128,13 @@ describe("Todo endpoints test", () => {
 });
 
 describe("Todo endpoints failed with not exist email in token", () => {
-
   it("should test get todos failed", async () => {
     const res = await request(app)
       .get("/todo/")
-      .set({ Accept: "application/json", Authorization: `Bearer ${test.wrong_token}` })
+      .set({
+        Accept: "application/json",
+        Authorization: `Bearer ${test.wrong_token}`,
+      })
       .send();
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty("message");
