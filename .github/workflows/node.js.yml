@@ -48,10 +48,6 @@ jobs:
         with:
           image: "todo-be:latest"
           fail-build: true
-      - uses: anchore/scan-action@v3
-        with:
-          image: "todo-fe:latest"
-          fail-build: true
   depcheck:
     name: Dependency check
     runs-on: ubuntu-latest
