@@ -95,7 +95,7 @@ jobs:
       - run: npm ci
       - run: npm i pg
         working-directory: backend
-      - run: docker run --name pgDb -p 5432:80 -e "DB_USER=hung" -e "DB_PASSWORD=password" -d dpage/pgadmin4
+      - run: docker run --name postgres-db -e POSTGRES_PASSWORD=password -e POSTGRES_USERNAME=hung -p 5432:5432 -d postgres
         working-directory: backend/config
       - run: npm run build --if-present
       - run: npm test
