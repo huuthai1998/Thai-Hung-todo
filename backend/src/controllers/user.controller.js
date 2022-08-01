@@ -64,7 +64,7 @@ exports.getUser = async (req, res, next) => {
     res.status(200).send({ user: { username, email, avatar } });
   } catch (err) {
     logger.error(err);
-    res.status(401).send({ message: err.message });
+    res.status(500).send({ message: err.message });
   }
 };
 

@@ -60,16 +60,27 @@ describe("User endpoints test", () => {
   });
 
   it("should be able to update user's info", async () => {
-    const res = await request(app)
-      .put("/user")
-      .set(header)
-      .send({ username: "I just got updated", avatar: "Random pic" });
+    const res = await request(app).put("/user").set(header).send({
+      username: "I just got updated",
+      avatar: "Random pic",
+      oldPassword: "thisisnothash",
+      newPassword: "thisisnothash2",
+    });
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("user");
     expect(res.body.user).toHaveProperty("avatar", "email", "username");
     const { avatar, username } = res.body.user;
     expect(avatar).toBe("Random pic");
     expect(username).toBe("I just got updated");
+  });
+
+  it("wrong old password, should fail to change password", async () => {
+    const res = await request(app).put("/user").set(header).send({
+      oldPassword: "thisisnothash_wrong",
+      newPassword: "thisisnothash2",
+    });
+    expect(res.status).toBe(403);
+    expect(res.body.message).toBe("Password is incorrect");
   });
 
   it("no token provided, should fail to update user info", async () => {
