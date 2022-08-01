@@ -95,7 +95,7 @@ jobs:
       - run: npm ci
       - run: npm i pg
         working-directory: backend
-      - run: docker compose up -d
+      - run: docker run --name pgDb -p 5432:80 -e "DB_USER=hung" -e "DB_PASSWORD=password" -d dpage/pgadmin4
       - run: npm run build --if-present
       - run: npm test
   logs:
