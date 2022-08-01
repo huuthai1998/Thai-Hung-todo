@@ -2,7 +2,6 @@
 node_modules
 *.log
 *.gz
-firebase.config.js
 
 # Coveralls
 .nyc_output

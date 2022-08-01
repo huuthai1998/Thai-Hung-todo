@@ -5,7 +5,15 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { AuthProvider } from "./contexts/authStore";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "./firebase.config";
+
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  authDomain: "todos-app-a71f2.firebaseapp.com",
+  projectId: "todos-app-a71f2",
+  storageBucket: process.env.REACT_APP_FIREBASE_BUCKET_ID,
+  messagingSenderId: "454466851805",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+};
 
 const app = initializeApp(firebaseConfig);
 const root = ReactDOM.createRoot(document.getElementById("root"));
