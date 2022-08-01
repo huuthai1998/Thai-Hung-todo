@@ -30,9 +30,13 @@ jobs:
           registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-      - run: |
-          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/thaitodobe:${{ github.sha }}
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/thaitodobe:${{ github.sha }}
+
+      - name: Build and push container image to registry
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.ACR_USERNAME }}/thaitodobe:${{ github.sha }}
+        file: ./Dockerfile
 
       - name: "Deploy to Azure Container Instances"
         uses: "azure/aci-deploy@v1"
