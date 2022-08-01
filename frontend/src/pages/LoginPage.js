@@ -28,7 +28,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      if (!info.email) throw new Error("Please inpput your email");
+      if (!info.email) throw new Error("Please enter your email");
       if (!validator.isEmail(info.email)) throw new Error("Invalid email");
       if (!info.password) throw new Error("Please inpput your password");
       const { data } = await axios.post("/user/login", {

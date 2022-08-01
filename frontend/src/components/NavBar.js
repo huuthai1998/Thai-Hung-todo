@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -68,21 +67,21 @@ export default function NavBar() {
             <button className="text-gray-700 font-semibold px-2 items-center">
               <FontAwesomeIcon icon={faChevronDown} color="#42464B" />
             </button>
-            <ul className="dropdown-menu z-10 group-hover:block absolute hidden rounded-md border border-gray-200 bg-white right-0">
-              <li className="hover:bg-gray-200 p-1">
-                <Link
-                  to="/account"
-                  className="text-base text-black hover:text-black w-28"
+            <ul className="dropdown-menu z-10 group-hover:block hover:cursor-pointer absolute hidden rounded-md border border-gray-200 bg-white right-0">
+              <li className="hover:bg-gray-200 w-28">
+                <div
+                  onClick={() => navigate("/account")}
+                  className="text-base text-black hover:text-black p-1 w-full"
                 >
                   <FontAwesomeIcon
                     icon={faUserCircle}
                     className="mx-2 text-gray-600"
                   />
                   Details
-                </Link>
+                </div>
               </li>
-              <li className="hover:bg-gray-200 p-1">
-                <div onClick={handleLogout} className="text-base w-28">
+              <li className="hover:bg-gray-200 w-28">
+                <div onClick={handleLogout} className="text-base p-1 w-full">
                   <FontAwesomeIcon
                     icon={faSignOutAlt}
                     className="mx-2 text-gray-600"
