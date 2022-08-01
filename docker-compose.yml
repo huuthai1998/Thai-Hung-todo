@@ -13,34 +13,34 @@ services:
       - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
-  backend:
-    image: todo-be
-    build:
-      dockerfile: Dockerfile
-      context: ./backend
-    volumes:
-      - /node_modules
-    environment:
-      - DB_USERNAME=hung
-      - DB_PASSWORD=password
-      - NODE_ENV=development
-      - PORT=5001
-      - JWT_SECRET=clocked
-      - DB_HOST=database
-    ports:
-      - 5001:5001
-  frontend:
-    image: todo-fe
-    build:
-      dockerfile: Dockerfile
-      context: ./frontend
-    volumes:
-      - /node_modules
-    environment:
-      - NODE_ENV=development
-      - REACT_APP_DEVELOPMENT_API_ENDPOINT=/devURL
-    ports:
-      - 3000:3000
+  # backend:
+  #   image: todo-be
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./backend
+  #   volumes:
+  #     - /node_modules
+  #   environment:
+  #     - DB_USERNAME=hung
+  #     - DB_PASSWORD=password
+  #     - NODE_ENV=development
+  #     - PORT=5001
+  #     - JWT_SECRET=clocked
+  #     - DB_HOST=database
+  #   ports:
+  #     - 5001:5001
+  # frontend:
+  #   image: todo-fe
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./frontend
+  #   volumes:
+  #     - /node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #     - REACT_APP_DEVELOPMENT_API_ENDPOINT=/devURL
+  #   ports:
+  #     - 3000:3000
 volumes:
   db:
     driver: local
