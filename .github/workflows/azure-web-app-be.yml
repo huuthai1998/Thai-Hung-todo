@@ -37,9 +37,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_deploy_job
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          publish-profile: <publishData><publishProfile profileName="ca-sea-webapp-thai-backend - Web Deploy" publishMethod="MSDeploy" publishUrl="ca-sea-webapp-thai-backend.scm.azurewebsites.net:443" msdeploySite="ca-sea-webapp-thai-backend" userName="$ca-sea-webapp-thai-backend" userPWD="TF5ZjZQPoqXZifasolDPSYSsyv5mniYK3CaxWNop3H2dgcKkZsoCNWQiejyP" destinationAppUrl="http://ca-sea-webapp-thai-backend.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="ca-sea-webapp-thai-backend - FTP" publishMethod="FTP" publishUrl="ftp://waws-prod-blu-197.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="ca-sea-webapp-thai-backend\$ca-sea-webapp-thai-backend" userPWD="TF5ZjZQPoqXZifasolDPSYSsyv5mniYK3CaxWNop3H2dgcKkZsoCNWQiejyP" destinationAppUrl="http://ca-sea-webapp-thai-backend.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites"><databases /></publishProfile><publishProfile profileName="ca-sea-webapp-thai-backend - Zip Deploy" publishMethod="ZipDeploy" publishUrl="ca-sea-webapp-thai-backend.scm.azurewebsites.net:443" userName="$ca-sea-webapp-thai-backend" userPWD="TF5ZjZQPoqXZifasolDPSYSsyv5mniYK3CaxWNop3H2dgcKkZsoCNWQiejyP" destinationAppUrl="http://ca-sea-webapp-thai-backend.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com" webSystem="WebSites"><databases /></publishProfile></publishData>
+          publish-profile: ${{ secrets.PUBLISH_PROFILE }}
           images: "thaitodoacrbe.azurecr.io/thaitodobe"
