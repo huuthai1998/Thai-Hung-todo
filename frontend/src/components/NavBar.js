@@ -8,7 +8,7 @@ import {
   faUserCircle,
   faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import Avatar from "../assets/rose.webp";
+import Avatar from "../assets/avatar.jpeg";
 import Logo from "../assets/Logo.png";
 
 import { useAuthContext } from "../contexts/authStore";
@@ -55,8 +55,12 @@ export default function NavBar() {
           <div className="mr-3 font-semibold">{authContext.user?.username}</div>
           <div className="rounded-full h-10 w-10">
             <img
-              src={Avatar}
-              alt="User Avatar"
+              src={
+                authContext.user.avatar?.length > 1
+                  ? authContext.user.avatar
+                  : Avatar
+              }
+              alt="user avatar"
               className="rounded-full h-10 w-10 object-cover"
             />
           </div>
