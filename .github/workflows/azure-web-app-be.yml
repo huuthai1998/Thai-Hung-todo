@@ -44,5 +44,5 @@ jobs:
         with:
           app-name: "todowebappduong"
           slot-name: "production"
-          publish-profile: ca-sea-webapp-thai-backend.azurewebsites.net
+          publish-profile: ${{ secrets.PUBLISH_PROFILE }}
           images: "thaitodoacrbe.azurecr.io/thaitodobe"
