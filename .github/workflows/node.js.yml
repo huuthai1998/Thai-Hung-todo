@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build the container image
-      - run: docker compose up -d
+        run: docker compose up -d
       - uses: anchore/scan-action@v3
         with:
           image: "todo-be:latest"
