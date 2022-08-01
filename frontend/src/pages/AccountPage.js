@@ -2,8 +2,9 @@ import React, { createRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-import Avatar from "../assets/rose.webp";
+import Avatar from "../assets/avatar.jpeg";
 import { notification } from "antd";
 
 import { useAuthContext } from "../contexts/authStore";
@@ -51,10 +52,11 @@ const InputAccount = ({
   );
 };
 
-const CHANGE_OPTIONS = {
-  AVATAR: "AVATAR",
-  USERNAME: "USERNAME",
-  PASSWORD: "PASSWORD",
+const OPTIONS = {
+  CHANGE_AVATAR: "CHANGE_AVATAR",
+  CHANGE_USERNAME: "CHANGE_USERNAME",
+  CHANGE_PASSWORD: "CHANGE_PASSWORD",
+  REMOVE_AVATAR: "REMOVE_AVATAR",
 };
 
 export default function AccountPage() {
@@ -72,6 +74,7 @@ export default function AccountPage() {
   const { authContext, setUser } = useAuthContext();
 
   const uploadImgButton = createRef(null);
+  const storage = getStorage();
 
   useEffect(() => {
     if (!authContext.token && !Cookies.get("token")) navigate("/welcome");
@@ -129,9 +132,32 @@ export default function AccountPage() {
   };
 
   const changeAvatar = async () => {
-    // setSelectedImage(event.target.files[0]);
     try {
-      await axios.put("/user", { avatar: imageFile });
+      const storageRef = ref(storage, imageFile.name);
+      await uploadBytes(storageRef, imageFile);
+      const uploaderUrl = await getDownloadURL(ref(storage, imageFile.name));
+      await axios.put("/user", { avatar: uploaderUrl });
+      setUser({ ...authContext.user, avatar: uploaderUrl });
+      notification.info({
+        message: "Successfully updated avatar",
+        placement: "top",
+      });
+    } catch (err) {
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+      });
+    }
+  };
+
+  const removeAvatar = async () => {
+    try {
+      await axios.put("/user", { avatar: " " });
+      setUser({ ...authContext.user, avatar: " " });
+      notification.info({
+        message: "Successfully removed avatar",
+        placement: "top",
+      });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
@@ -142,32 +168,37 @@ export default function AccountPage() {
 
   const submitHandler = (event, opt) => {
     event.preventDefault();
-    if (event.target?.files?.[0]) {
+    if (opt === OPTIONS.CHANGE_AVATAR && event.target?.files?.[0]) {
       setImageFile(event.target.files[0]);
     }
     setOption(opt);
     setLoading(true);
   };
 
-  useEffect(() => {
+  const handleOption = async () => {
     if (loading) {
-      // setTimeout(() => {
-      setLoading(false);
       switch (option) {
-        case CHANGE_OPTIONS.AVATAR:
-          changeAvatar();
+        case OPTIONS.CHANGE_AVATAR:
+          await changeAvatar();
           break;
-        case CHANGE_OPTIONS.USERNAME:
-          changeUsername();
+        case OPTIONS.CHANGE_USERNAME:
+          await changeUsername();
           break;
-        case CHANGE_OPTIONS.PASSWORD:
-          changePassword();
+        case OPTIONS.CHANGE_PASSWORD:
+          await changePassword();
+          break;
+        case OPTIONS.REMOVE_AVATAR:
+          await removeAvatar();
           break;
         default:
           console.log("nothing change");
       }
-      // }, 500);
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    handleOption();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
@@ -178,7 +209,11 @@ export default function AccountPage() {
       <div className="flex items-center mb-10">
         <div className="rounded-full h-24 w-24 mr-6">
           <img
-            src={Avatar}
+            src={
+              authContext.user.avatar?.length > 1
+                ? authContext.user.avatar
+                : Avatar
+            }
             alt="User Avatar"
             className="rounded-full h-24 w-24 object-cover"
           />
@@ -188,7 +223,7 @@ export default function AccountPage() {
           style={{ display: "none" }}
           type="file"
           name="myImage"
-          onChange={(event) => submitHandler(event, CHANGE_OPTIONS.AVATAR)}
+          onChange={(event) => submitHandler(event, OPTIONS.CHANGE_AVATAR)}
         />
         <button
           onClick={() => uploadImgButton.current.click()}
@@ -196,13 +231,16 @@ export default function AccountPage() {
         >
           Change avatar
         </button>
-        <button className="font-semibold border-xred border rounded-md px-2 py-1 text-xred">
+        <button
+          className="font-semibold border-xred border rounded-md px-2 py-1 text-xred"
+          onClick={(event) => submitHandler(event, OPTIONS.REMOVE_AVATAR)}
+        >
           Remove avatar
         </button>
       </div>
       <InputAccount
         defaultValue={info.username}
-        buttonAction={(event) => submitHandler(event, CHANGE_OPTIONS.USERNAME)}
+        buttonAction={(event) => submitHandler(event, OPTIONS.CHANGE_USERNAME)}
         buttonName={"Update"}
         name="username"
         placeholder={"User name"}
@@ -235,7 +273,7 @@ export default function AccountPage() {
         name="confirmPassword"
         placeholder={"Confirm new password"}
         onChangeHandler={onInputChangeHandler}
-        buttonAction={(event) => submitHandler(event, CHANGE_OPTIONS.PASSWORD)}
+        buttonAction={(event) => submitHandler(event, OPTIONS.CHANGE_PASSWORD)}
         buttonName={"Change password"}
       />
     </div>
