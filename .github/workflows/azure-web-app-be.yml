@@ -31,17 +31,17 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
       - run: |
-              docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/thaitodobe:${{ github.sha }}
-              docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/thaitodobe:${{ github.sha }}
+          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/thaitodobe:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/thaitodobe:${{ github.sha }}
 
-      - name: 'Deploy to Azure Container Instances'
-          uses: 'azure/aci-deploy@v1'
-          with:
-            resource-group: ${{ secrets.RESOURCE_GROUP }}
-            dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/sampleapp:${{ github.sha }}
-            registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-            registry-username: ${{ secrets.ACR_USERNAME }}
-            registry-password: ${{ secrets.ACR_PASSWORD }}
-            name: aci-sampleapp
-            location: 'west us'
+      - name: "Deploy to Azure Container Instances"
+        uses: "azure/aci-deploy@v1"
+        with:
+          resource-group: ${{ secrets.RESOURCE_GROUP }}
+          dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+          image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/sampleapp:${{ github.sha }}
+          registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          registry-username: ${{ secrets.ACR_USERNAME }}
+          registry-password: ${{ secrets.ACR_PASSWORD }}
+          name: aci-sampleapp
+          location: "west us"
