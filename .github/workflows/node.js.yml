@@ -37,17 +37,17 @@ jobs:
         with:
           host: ${{ secrets.SONARQUBE_HOST }}
           login: ${{ secrets.SONARQUBE_TOKEN }}
-  containerScan:
-    name: Container scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build the container image
-        run: docker compose up -d
-      - uses: anchore/scan-action@v3
-        with:
-          image: "todo-be:latest"
-          fail-build: true
+  # containerScan:
+  #   name: Container scan
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Build the container image
+  #       run: docker compose up -d
+  #     - uses: anchore/scan-action@v3
+  #       with:
+  #         image: "todo-be:latest"
+  #         fail-build: true
   depcheck:
     name: Dependency check
     runs-on: ubuntu-latest
