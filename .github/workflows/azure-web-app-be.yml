@@ -45,3 +45,20 @@ jobs:
           registry-password: ${{ secrets.ACR_PASSWORD }}
           name: aci-sampleapp
           location: "west us"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: "production"
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "todowebappduong"
+          slot-name: "production"
+          publish-profile: ca-sea-webapp-thai-backend.azurewebsites.net
+          images: "thaitodoacrbe.azurecr.io/thaitodobe"
