@@ -59,7 +59,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: "**/package-lock.json"
       - run: npm install -g depcheck
-      - run: depcheck ./ --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli"
+      - run: depcheck ./src --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli"
         working-directory: backend
       - run: depcheck ./ --ignores="autoprefixer,tailwindcss,postcss,react-*,eslint-config-react-app"
         working-directory: frontend
@@ -96,7 +96,7 @@ jobs:
       - run: npm i pg
         working-directory: backend
       - run: docker run --name postgres-db -e POSTGRES_PASSWORD="password" -e POSTGRES_USER="hung" -p 5432:5432 -d postgres
-        working-directory: backend/config
+        working-directory: backend/database/config
       - run: npm run build --if-present
       - run: npm test
   logs:

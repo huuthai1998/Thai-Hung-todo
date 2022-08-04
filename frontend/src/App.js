@@ -15,7 +15,8 @@ import NavBar from "./components/NavBar";
 import { useAuthContext } from "./contexts/authStore";
 import { TodoProvider } from "./contexts/todoStore";
 
-axios.defaults.baseURL = "http://localhost:5001/";
+axios.defaults.baseURL =
+  "https://ca-sea-webapp-thai-backend.azurewebsites.net/";
 axios.defaults.headers.common.accept = "application/json";
 
 const App = () => {
