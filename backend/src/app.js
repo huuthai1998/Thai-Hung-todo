@@ -7,6 +7,7 @@ require("dotenv").config();
 
 var todoRouter = require("./routes/todo");
 var userRouter = require("./routes/user");
+var indexRouter = require("./routes/index");
 
 var app = express();
 
@@ -17,6 +18,7 @@ app.use(cookieParser());
 var cors = require("cors");
 
 app.use(cors());
+app.use("/", indexRouter);
 app.use("/todo", todoRouter);
 app.use("/user", userRouter);
 
