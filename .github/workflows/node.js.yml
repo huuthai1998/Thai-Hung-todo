@@ -59,9 +59,9 @@ jobs:
           cache: "npm"
           cache-dependency-path: "**/package-lock.json"
       - run: npm install -g depcheck
-      - run: depcheck ./src --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli"
+      - run: depcheck ./ --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli" --ignore-bin-package=true
         working-directory: backend
-      - run: depcheck ./ --ignores="autoprefixer,tailwindcss,postcss,react-*,eslint-config-react-app"
+      - run: depcheck ./ --ignores="autoprefixer,tailwindcss,postcss,react-*,eslint-config-react-app" --ignore-bin-package=true
         working-directory: frontend
 
   gitleaks:
