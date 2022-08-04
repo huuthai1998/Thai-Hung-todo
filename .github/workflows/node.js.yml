@@ -61,7 +61,7 @@ jobs:
       - run: npm install -g depcheck
       - run: depcheck ./ --ignores="cross-env,debug,jade,jest,joi,nodemon,pg,sequelize-cli" --ignore-bin-package=true
         working-directory: backend
-      - run: depcheck ./ --ignores="autoprefixer,tailwindcss,postcss,react-*,eslint-config-react-app @fortawesome*" --ignore-bin-package=true
+      - run: depcheck ./ --ignores="autoprefixer,tailwindcss,postcss,react-*,eslint-config-react-app @fortawesome/* eslint-config-react-app" --ignore-bin-package=true
         working-directory: frontend
 
   gitleaks:
