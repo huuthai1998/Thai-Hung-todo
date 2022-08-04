@@ -8,14 +8,15 @@ import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_KEY,
-  authDomain: "todos-app-a71f2.firebaseapp.com",
-  projectId: "todos-app-a71f2",
-  storageBucket: process.env.REACT_APP_FIREBASE_BUCKET_ID,
+  authDomain: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.appspot.com`,
   messagingSenderId: "454466851805",
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

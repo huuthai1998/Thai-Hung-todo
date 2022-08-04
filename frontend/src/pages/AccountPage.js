@@ -2,11 +2,13 @@ import React, { createRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { LoadingOutlined } from "@ant-design/icons";
-import Avatar from "../assets/rose.webp";
-import { notification, Spin } from "antd";
-import { useAuthContext } from "../contexts/authStore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+import Avatar from "../assets/avatar.jpeg";
+import { notification } from "antd";
+
+import { useAuthContext } from "../contexts/authStore";
+import Spinner from "../components/Spinner";
 
 const InputAccount = ({
   type,
@@ -50,6 +52,13 @@ const InputAccount = ({
   );
 };
 
+const OPTIONS = {
+  CHANGE_AVATAR: "CHANGE_AVATAR",
+  CHANGE_USERNAME: "CHANGE_USERNAME",
+  CHANGE_PASSWORD: "CHANGE_PASSWORD",
+  REMOVE_AVATAR: "REMOVE_AVATAR",
+};
+
 export default function AccountPage() {
   const navigate = useNavigate();
 
@@ -58,7 +67,9 @@ export default function AccountPage() {
     newPassword: "",
     confirmPassword: "",
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState();
+  const [option, setOption] = useState("");
 
   const { authContext, setUser } = useAuthContext();
 
@@ -75,21 +86,20 @@ export default function AccountPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.user]);
 
-  const onChangeHandler = (e) => {
+  const onInputChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
     setInfo({ ...info, [name]: value });
   };
 
-  const updateUsername = async (e) => {
-    e.preventDefault();
+  const changeUsername = async () => {
     try {
       await axios.put("/user", { username: info.username });
-      setUser({ ...authContext.user, username: info.username });
       notification.info({
         message: "Successfully changed your user name",
         placement: "top",
         duration: 2,
       });
+      setUser({ ...authContext.user, username: info.username });
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
@@ -98,13 +108,12 @@ export default function AccountPage() {
     }
   };
 
-  const changePassword = async (e) => {
-    e.preventDefault();
+  const changePassword = async () => {
     try {
       if (info.password?.length === 0 || info.newPassword?.length === 0)
-        throw Error(`Please input your password`);
+        throw new Error("Please input your passwords");
       if (info.confirmPassword !== info.newPassword)
-        throw Error(`Passwords don't match`);
+        throw new Error("Passwords don't match");
       await axios.put("/user", {
         oldPassword: info.password,
         newPassword: info.newPassword,
@@ -122,19 +131,13 @@ export default function AccountPage() {
     }
   };
 
-  const handleUpload = async (event) => {
-    event.preventDefault();
-    // setSelectedImage(event.target.files[0]);
+  const changeAvatar = async () => {
     try {
-      const storageRef = ref(storage, event.target.files[0].name);
-      // setLoading(true);
-      await uploadBytes(storageRef, event.target.files[0]);
-      const uploaderUrl = await getDownloadURL(
-        ref(storage, event.target.files[0].name)
-      );
+      const storageRef = ref(storage, imageFile.name);
+      await uploadBytes(storageRef, imageFile);
+      const uploaderUrl = await getDownloadURL(ref(storage, imageFile.name));
       await axios.put("/user", { avatar: uploaderUrl });
       setUser({ ...authContext.user, avatar: uploaderUrl });
-      // setLoading(false);
       notification.info({
         message: "Successfully updated avatar",
         placement: "top",
@@ -146,26 +149,71 @@ export default function AccountPage() {
       });
     }
   };
+
+  const removeAvatar = async () => {
+    try {
+      await axios.put("/user", { avatar: " " });
+      setUser({ ...authContext.user, avatar: " " });
+      notification.info({
+        message: "Successfully removed avatar",
+        placement: "top",
+      });
+    } catch (err) {
+      notification.error({
+        message: err.response?.data?.message || err.message,
+        placement: "top",
+      });
+    }
+  };
+
+  const submitHandler = (event, opt) => {
+    event.preventDefault();
+    if (opt === OPTIONS.CHANGE_AVATAR && event.target?.files?.[0]) {
+      setImageFile(event.target.files[0]);
+    }
+    setOption(opt);
+    setLoading(true);
+  };
+
+  const handleOption = async () => {
+    if (loading) {
+      switch (option) {
+        case OPTIONS.CHANGE_AVATAR:
+          await changeAvatar();
+          break;
+        case OPTIONS.CHANGE_USERNAME:
+          await changeUsername();
+          break;
+        case OPTIONS.CHANGE_PASSWORD:
+          await changePassword();
+          break;
+        case OPTIONS.REMOVE_AVATAR:
+          await removeAvatar();
+          break;
+        default:
+          console.log("nothing change");
+      }
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleOption();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   return (
     <div className="h-screen w-screen p-10">
-      {/* <Spin
-        spinning={loading}
-        size="large"
-        indicator={
-          <LoadingOutlined
-            style={{
-              fontSize: 24,
-              color: "xred",
-            }}
-            spin
-          />
-        }
-      > */}
+      {loading && <Spinner />}
       <h1 className="font-semibold text-3xl mb-10">Your account</h1>
       <div className="flex items-center mb-10">
         <div className="rounded-full h-24 w-24 mr-6">
           <img
-            src={authContext.user.avatar || Avatar}
+            src={
+              authContext.user.avatar?.length > 1
+                ? authContext.user.avatar
+                : Avatar
+            }
             alt="User Avatar"
             className="rounded-full h-24 w-24 object-cover"
           />
@@ -175,7 +223,7 @@ export default function AccountPage() {
           style={{ display: "none" }}
           type="file"
           name="myImage"
-          onChange={handleUpload}
+          onChange={(event) => submitHandler(event, OPTIONS.CHANGE_AVATAR)}
         />
         <button
           onClick={() => uploadImgButton.current.click()}
@@ -183,18 +231,21 @@ export default function AccountPage() {
         >
           Change avatar
         </button>
-        <button className="font-semibold border-xred border rounded-md px-2 py-1 text-xred">
+        <button
+          className="font-semibold border-xred border rounded-md px-2 py-1 text-xred"
+          onClick={(event) => submitHandler(event, OPTIONS.REMOVE_AVATAR)}
+        >
           Remove avatar
         </button>
       </div>
       <InputAccount
         defaultValue={info.username}
-        buttonAction={updateUsername}
+        buttonAction={(event) => submitHandler(event, OPTIONS.CHANGE_USERNAME)}
         buttonName={"Update"}
         name="username"
         placeholder={"User name"}
         label={"User name"}
-        onChangeHandler={onChangeHandler}
+        onChangeHandler={onInputChangeHandler}
       />
       <InputAccount
         defaultValue={info.email}
@@ -203,30 +254,28 @@ export default function AccountPage() {
         name="email"
         placeholder={"Email"}
         label={"Email"}
-        onChangeHandler={onChangeHandler}
       />
       <InputAccount
         type="password"
         name="password"
         placeholder={"Current password"}
         label={"Password"}
-        onChangeHandler={onChangeHandler}
+        onChangeHandler={onInputChangeHandler}
       />
       <InputAccount
         type="password"
         name="newPassword"
         placeholder={"New password"}
-        onChangeHandler={onChangeHandler}
+        onChangeHandler={onInputChangeHandler}
       />
       <InputAccount
         type="password"
         name="confirmPassword"
         placeholder={"Confirm new password"}
-        onChangeHandler={onChangeHandler}
-        buttonAction={changePassword}
+        onChangeHandler={onInputChangeHandler}
+        buttonAction={(event) => submitHandler(event, OPTIONS.CHANGE_PASSWORD)}
         buttonName={"Change password"}
       />
-      {/* </Spin> */}
     </div>
   );
 }

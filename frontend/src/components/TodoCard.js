@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
-
 import axios from "axios";
+
 import {
   Typography,
   Popconfirm,
@@ -21,6 +21,7 @@ import { faEdit, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 import { useTodoContext } from "../contexts/todoStore";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST, TAB_STATUS } from "../constant";
+import Spinner from "./Spinner";
 
 const { Paragraph } = Typography;
 const { Option } = Select;
@@ -43,11 +44,20 @@ const styles = {
   },
 };
 
+const HANDLE_OPTIONS = {
+  EDIT_TODO: "EDIT_TODO",
+  DELETE_TODO: "DELETE_TODO",
+  CHANGE_STATUS: "CHANGE_STATUS",
+};
+
 export default function TodoCard(props) {
   const [curData, setCurData] = useState(props.data);
+  const [newData, setNewData] = useState({}); // contain only part of todo props
   const [isCompleted, setIsCompleted] = useState(props.isCompleted);
   const [isEditing, setIsEditing] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [option, setOption] = useState("");
 
   const { editTodo, deleteTodo } = useTodoContext();
 
@@ -59,7 +69,7 @@ export default function TodoCard(props) {
     autoFocus: true,
     size: "large",
     onChange: (ref) => {
-      setCurData({ ...curData, content: ref.target.value });
+      setNewData({ ...newData, content: ref.target.value });
       setIsChanged(true);
     },
   };
@@ -67,15 +77,8 @@ export default function TodoCard(props) {
   const handleDelete = async () => {
     console.log("Delete todo:", curData.id);
     try {
-      const { status, data } = await axios.delete(`/todo/${curData.id}`);
-      if (status === 200) deleteTodo(curData.id);
-      else {
-        notification.info({
-          message: data.message,
-          placement: "top",
-          duration: 2,
-        });
-      }
+      await axios.delete(`/todo/${curData.id}`);
+      deleteTodo(curData.id);
     } catch (err) {
       notification.error({
         message: err.message,
@@ -91,39 +94,30 @@ export default function TodoCard(props) {
       return;
     }
     console.log("Edit todo:", curData.id);
-    if (curData.content && curData.content.trim().length > 0) {
-      try {
-        curData.content = curData.content.trim();
-        const { status, data } = await axios.patch(
-          `/todo/${curData.id}`,
-          curData
-        );
-        if (status === 200) {
-          editTodo(curData);
-          setIsEditing(false);
-        }
-        notification.info({
-          message: data.message,
-          placement: "top",
-          duration: 2,
-        });
-      } catch (err) {
-        notification.error({
-          message: err.message,
-          placement: "top",
-        });
-      }
-    } else {
+    try {
+      if (newData.content?.trim().length <= 0) {
+        throw new Error("Content of task can't be empty");
+      } else if (newData.content) newData.content = newData.content.trim();
+      const { data } = await axios.patch(`/todo/${curData.id}`, newData);
+      editTodo({ ...curData, ...newData });
+      setIsEditing(false);
       notification.info({
-        message: "Task content can't be empty",
+        message: data.message,
         placement: "top",
         duration: 2,
+      });
+      setNewData(newData);
+      setCurData({ ...curData, ...newData });
+    } catch (err) {
+      notification.error({
+        message: err.message,
+        placement: "top",
       });
     }
     setIsChanged(false);
   };
 
-  const changeStatus = async () => {
+  const handleChangeStatus = async () => {
     if (isEditing) return;
     console.log("Change todo status:", curData.id);
     const newStatus = !isCompleted
@@ -132,24 +126,16 @@ export default function TodoCard(props) {
     if (isCompleted) console.log("Uncheck");
     else console.log("Check");
     try {
-      const { status, data } = await axios.patch(`/todo/${curData.id}`, {
+      await axios.patch(`/todo/${curData.id}`, {
         status: newStatus,
       });
-      if (status === 200) {
-        setIsCompleted(!isCompleted);
-        editTodo({ ...curData, status: newStatus });
-        notification.info({
-          message: "Status updated",
-          placement: "top",
-          duration: 1.5,
-        });
-      } else {
-        notification.info({
-          message: data.message,
-          placement: "top",
-          duration: 2,
-        });
-      }
+      setIsCompleted(!isCompleted);
+      editTodo({ ...curData, status: newStatus });
+      notification.info({
+        message: "Status updated",
+        placement: "top",
+        duration: 2,
+      });
     } catch (err) {
       notification.error({
         message: err.message,
@@ -163,13 +149,41 @@ export default function TodoCard(props) {
     return current && current < moment().add(-1, "days");
   };
 
+  const submitHandler = (opt) => {
+    setOption(opt);
+    setLoading(true);
+  };
+
+  useEffect(() => {
+    if (loading) {
+      // setTimeout(() => {
+      setLoading(false);
+      switch (option) {
+        case HANDLE_OPTIONS.EDIT_TODO:
+          handleEdit();
+          break;
+        case HANDLE_OPTIONS.DELETE_TODO:
+          handleDelete();
+          break;
+        case HANDLE_OPTIONS.CHANGE_STATUS:
+          handleChangeStatus();
+          break;
+        default:
+          console.log("do nothing");
+      }
+      // }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   return (
     <div className="min-h-[100px] max-w-6xl grid grid-cols-12 bg-white rounded-lg shadow-[0_0_8px_2px_rgba(0,0,0,0.05)]">
+      {loading && <Spinner />}
       <div className="col-span-1 grid h-full place-items-center">
         <button
           className="rounded-full md:w-10 md:h-10 w-7 h-7"
           style={isCompleted ? styles.checkCircle : styles.circle}
-          onClick={changeStatus}
+          onClick={() => submitHandler(HANDLE_OPTIONS.CHANGE_STATUS)}
         >
           {isCompleted ? (
             <FontAwesomeIcon
@@ -213,7 +227,7 @@ export default function TodoCard(props) {
                 title="Do you really want to delete this task?"
                 okText="Yes"
                 cancelText="No"
-                onConfirm={handleDelete}
+                onConfirm={() => submitHandler(HANDLE_OPTIONS.DELETE_TODO)}
               >
                 <button className="font-medium text-lg pb-1 px-2 mr-2 hover:text-red-700 text-xred">
                   <FontAwesomeIcon icon={faTrashCan} />
@@ -232,7 +246,7 @@ export default function TodoCard(props) {
                     format="YYYY-MM-DD HH:mm"
                     defaultValue={moment(curData.dueDate)}
                     onChange={(value) => {
-                      setCurData({ ...curData, dueDate: value });
+                      setNewData({ ...newData, dueDate: value });
                       setIsChanged(true);
                     }}
                     disabledDate={disabledDate}
@@ -243,11 +257,9 @@ export default function TodoCard(props) {
                       icon={faCalendarDays}
                       color={COLORS.TIME}
                     />
-                    <button
-                      style={{ ...styles.todo_props, color: COLORS.TIME }}
-                    >
+                    <span style={{ ...styles.todo_props, color: COLORS.TIME }}>
                       {moment(curData.dueDate).format("ddd MMM DD YYYY HH:mm")}
-                    </button>
+                    </span>
                   </>
                 )}
               </span>
@@ -257,7 +269,7 @@ export default function TodoCard(props) {
                     defaultValue={curData.category}
                     className="w-32"
                     onChange={(value) => {
-                      setCurData({ ...curData, category: value });
+                      setNewData({ ...newData, category: value });
                       setIsChanged(true);
                     }}
                   >
@@ -270,11 +282,11 @@ export default function TodoCard(props) {
                 ) : (
                   <>
                     <FontAwesomeIcon icon={faCircle} color={COLORS.BG_BLUE} />
-                    <button
+                    <span
                       style={{ ...styles.todo_props, color: COLORS.CATEGORY }}
                     >
                       {curData.category}
-                    </button>
+                    </span>
                   </>
                 )}
               </span>
@@ -284,7 +296,7 @@ export default function TodoCard(props) {
                     defaultValue={curData.priority}
                     className="w-32"
                     onChange={(value) => {
-                      setCurData({ ...curData, priority: value });
+                      setNewData({ ...newData, priority: value });
                       setIsChanged(true);
                     }}
                   >
@@ -304,14 +316,14 @@ export default function TodoCard(props) {
                       icon={faFlag}
                       color={COLORS[curData.priority]}
                     />
-                    <button
+                    <span
                       style={{
                         ...styles.todo_props,
                         color: COLORS[curData.priority],
                       }}
                     >
                       {curData.priority}
-                    </button>
+                    </span>
                   </>
                 )}
               </span>
@@ -326,7 +338,7 @@ export default function TodoCard(props) {
                 </button>
                 <button
                   className="rounded-md shadow-sm px-4 py-1 mr-4 bg-xred text-base font-medium text-white hover:bg-red-600 sm:ml-3 sm:w-auto sm:text-sm"
-                  onClick={handleEdit}
+                  onClick={() => submitHandler(HANDLE_OPTIONS.EDIT_TODO)}
                 >
                   Save
                 </button>
