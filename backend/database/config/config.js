@@ -15,16 +15,16 @@ module.exports = {
     },
   },
   test: {
-    username: "hung",
-    password: "password",
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
     database: "postgres",
-    host: "127.0.0.1",
+    host: process.env.DB_HOST,
     dialect: "postgres",
   },
   production: {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    database: "postgres",
+    database: "dev_db",
     host: process.env.DB_HOST,
     dialect: "postgres",
     dialectOptions: {
