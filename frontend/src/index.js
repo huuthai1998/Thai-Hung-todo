@@ -7,14 +7,13 @@ import { AuthProvider } from "./contexts/authStore";
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
-  authDomain: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: `${process.env.REACT_APP_FIREBASE_PROJECT_ID}.appspot.com`,
+  apiKey: "AIzaSyCINc9Vu-LdvDbtIHIXhjlgzB_nlripgSU",
+  authDomain: `todos-app-a71f2.firebaseapp.com`,
+  projectId: "todos-app-a71f2",
+  storageBucket: `todos-app-a71f2.appspot.com`,
   messagingSenderId: "454466851805",
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  appId: "1:454466851805:web:bd4e229b0ac4861251dc34",
 };
-console.log(firebaseConfig);
 
 initializeApp(firebaseConfig);
 
