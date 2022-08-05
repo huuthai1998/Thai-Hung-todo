@@ -49,3 +49,11 @@ Code Academy 2022 - Week 5+6 Assigment
   ```sh
   npm start
   ```
+  ## Run Using docker
+  
+- Prequisite: docker
+  ```sh
+docker compose up -d
+  ```
+This will create and run 3 containers (frontend, backend, postgresDB)
+
