@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import Cookies from "js-cookie";
-import axios from "axios";
+import axiosInstance from "./service/axiosInstance";
 
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
@@ -15,15 +15,12 @@ import NavBar from "./components/NavBar";
 import { useAuthContext } from "./contexts/authStore";
 import { TodoProvider } from "./contexts/todoStore";
 
-axios.defaults.baseURL = "http://localhost:5001/";
-axios.defaults.headers.common.accept = "application/json";
-
 const App = () => {
-  const { authContext, setUser, setToken } = useAuthContext();
+  const { setUser } = useAuthContext();
 
   const fetchUserInfo = async () => {
     try {
-      const { data } = await axios.get("/user");
+      const { data } = await axiosInstance.get("/user");
       setUser(data.user);
     } catch (err) {
       console.log(err?.response?.data?.message);
@@ -31,19 +28,9 @@ const App = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      setToken(token);
-      axios.defaults.headers.common.authorization = `Bearer ${token}`;
-    }
+    if (Cookies.get("token")?.length > 0) fetchUserInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    axios.defaults.headers.common.authorization = `Bearer ${authContext.token}`;
-    if (authContext.token.length > 0) fetchUserInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authContext.token]);
 
   return (
     <BrowserRouter>

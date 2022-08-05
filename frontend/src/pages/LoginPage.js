@@ -1,20 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import validator from "validator";
-import axios from "axios";
+import Cookies from "js-cookie";
+import axiosInstance from "../service/axiosInstance";
 
 import { notification } from "antd";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 
 import InputBox from "../components/InputBox";
-import { useAuthContext } from "../contexts/authStore";
 import Spinner from "../components/Spinner";
+import { useAuthContext } from "../contexts/authStore";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [info, setInfo] = useState({});
   const [loading, setLoading] = useState(false);
-  const { setToken, authContext } = useAuthContext();
+
+  const { setUser } = useAuthContext();
+
+  const fetchUserInfo = async () => {
+    try {
+      const { data } = await axiosInstance.get("/user");
+      setUser(data.user);
+    } catch (err) {
+      console.log(err?.response?.data?.message);
+    }
+  };
 
   const onChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
@@ -31,19 +42,18 @@ export default function LoginPage() {
       if (!info.email) throw new Error("Please enter your email");
       if (!validator.isEmail(info.email)) throw new Error("Invalid email");
       if (!info.password) throw new Error("Please inpput your password");
-      const { data } = await axios.post("/user/login", {
+      const { data } = await axiosInstance.post("/user/login", {
         email: info.email,
         password: info.password,
       });
-      setToken(data.token);
-      axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
-      return true;
+      Cookies.set("token", data.token);
+      await fetchUserInfo();
+      navigate("/");
     } catch (err) {
       notification.error({
         message: err.response?.data?.message || err.message,
         placement: "top",
       });
-      return false;
     }
   };
 
@@ -51,17 +61,18 @@ export default function LoginPage() {
     if (loading) {
       // setTimeout(() => {
       setLoading(false);
-      const loginStatus = handleLogin();
-      if (loginStatus === true) navigate("/");
+      handleLogin();
       // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   useEffect(() => {
-    if (authContext.token.length > 0) navigate("/");
+    if (Cookies.get("token")?.length > 0) {
+      navigate("/");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authContext.token]);
+  }, []);
 
   return (
     <div>

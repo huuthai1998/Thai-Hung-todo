@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import moment from "moment";
-import axios from "axios";
+import axiosInstance from "../service/axiosInstance";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import { useAuthContext } from "../contexts/authStore";
 import { TAB_STATUS } from "../constant";
 
 import Spinner from "../components/Spinner";
@@ -33,13 +32,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const { authContext } = useAuthContext();
   const { todoContext, setTodos } = useTodoContext();
 
   const fetchTodos = async () => {
     try {
-      if (authContext.token) {
-        const { data } = await axios.get("/todo");
+      if (Cookies.get("token")) {
+        const { data } = await axiosInstance.get("/todo");
         console.log("Todos count: ", data.count);
         setTodos(data.data);
       }
@@ -57,16 +55,13 @@ export default function Home() {
     // handle situation when refresh home page, context token is reset,
     if (!Cookies.get("token")) navigate("/welcome");
     else {
-      axios.defaults.headers.common.authorization = `Bearer ${Cookies.get(
-        "token"
-      )}`;
       // setTimeout(() => {
       fetchTodos();
       setLoading(false);
       // }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authContext.token]);
+  }, []);
 
   useEffect(() => {
     console.log("Trigger todos");

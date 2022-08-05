@@ -13,18 +13,17 @@ import Logo from "../assets/Logo.png";
 import { useAuthContext } from "../contexts/authStore";
 
 export default function NavBar() {
-  const { authContext, setToken, setUser } = useAuthContext();
+  const { authContext, setUser } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    setToken("");
     setUser({});
     Cookies.remove("token");
     navigate("/welcome");
   };
 
   const onClickLogo = () => {
-    if (!authContext.token) navigate("/welcome");
+    if (!Cookies.get("token")) navigate("/welcome");
     else navigate("/");
   };
 
@@ -34,7 +33,7 @@ export default function NavBar() {
         <img src={Logo} alt="logo" width="160px" height="55px" />
       </button>
 
-      {!authContext.token ? (
+      {!Cookies.get("token") ? (
         <div>
           <button
             onClick={() => navigate("/login")}

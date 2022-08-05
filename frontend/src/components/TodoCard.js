@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-import axios from "axios";
+import axiosInstance from "../service/axiosInstance";
 
 import {
   Typography,
@@ -77,7 +77,7 @@ export default function TodoCard(props) {
   const handleDelete = async () => {
     console.log("Delete todo:", curData.id);
     try {
-      await axios.delete(`/todo/${curData.id}`);
+      await axiosInstance.delete(`/todo/${curData.id}`);
       deleteTodo(curData.id);
     } catch (err) {
       notification.error({
@@ -98,7 +98,10 @@ export default function TodoCard(props) {
       if (newData.content?.trim().length <= 0) {
         throw new Error("Content of task can't be empty");
       } else if (newData.content) newData.content = newData.content.trim();
-      const { data } = await axios.patch(`/todo/${curData.id}`, newData);
+      const { data } = await axiosInstance.patch(
+        `/todo/${curData.id}`,
+        newData
+      );
       editTodo({ ...curData, ...newData });
       setIsEditing(false);
       notification.info({
@@ -126,7 +129,7 @@ export default function TodoCard(props) {
     if (isCompleted) console.log("Uncheck");
     else console.log("Check");
     try {
-      await axios.patch(`/todo/${curData.id}`, {
+      await axiosInstance.patch(`/todo/${curData.id}`, {
         status: newStatus,
       });
       setIsCompleted(!isCompleted);

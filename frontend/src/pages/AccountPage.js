@@ -1,7 +1,7 @@
 import React, { createRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axios from "axios";
+import axiosInstance from "../service/axiosInstance";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import Avatar from "../assets/avatar.jpeg";
@@ -77,9 +77,9 @@ export default function AccountPage() {
   const storage = getStorage();
 
   useEffect(() => {
-    if (!authContext.token && !Cookies.get("token")) navigate("/welcome");
+    if (!Cookies.get("token") && !Cookies.get("token")) navigate("/welcome");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authContext.token]);
+  }, [Cookies.get("token")]);
 
   useEffect(() => {
     setInfo({ ...info, ...authContext.user });
@@ -93,7 +93,7 @@ export default function AccountPage() {
 
   const changeUsername = async () => {
     try {
-      await axios.put("/user", { username: info.username });
+      await axiosInstance.put("/user", { username: info.username });
       notification.info({
         message: "Successfully changed your user name",
         placement: "top",
@@ -114,7 +114,7 @@ export default function AccountPage() {
         throw new Error("Please input your passwords");
       if (info.confirmPassword !== info.newPassword)
         throw new Error("Passwords don't match");
-      await axios.put("/user", {
+      await axiosInstance.put("/user", {
         oldPassword: info.password,
         newPassword: info.newPassword,
       });
@@ -136,7 +136,7 @@ export default function AccountPage() {
       const storageRef = ref(storage, imageFile.name);
       await uploadBytes(storageRef, imageFile);
       const uploaderUrl = await getDownloadURL(ref(storage, imageFile.name));
-      await axios.put("/user", { avatar: uploaderUrl });
+      await axiosInstance.put("/user", { avatar: uploaderUrl });
       setUser({ ...authContext.user, avatar: uploaderUrl });
       notification.info({
         message: "Successfully updated avatar",
@@ -152,7 +152,7 @@ export default function AccountPage() {
 
   const removeAvatar = async () => {
     try {
-      await axios.put("/user", { avatar: " " });
+      await axiosInstance.put("/user", { avatar: " " });
       setUser({ ...authContext.user, avatar: " " });
       notification.info({
         message: "Successfully removed avatar",

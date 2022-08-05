@@ -1,15 +1,8 @@
 import React, { useReducer } from "react";
-import { SET_TOKEN, SET_USER } from "../constant";
-import Cookies from "js-cookie";
+import { SET_USER } from "../constant";
 
 const authReducer = (state, action) => {
   switch (action.type) {
-    case SET_TOKEN:
-      Cookies.set("token", action.payload.token);
-      return {
-        ...state,
-        token: action.payload.token,
-      };
     case SET_USER:
       return {
         ...state,
@@ -21,24 +14,16 @@ const authReducer = (state, action) => {
 };
 
 const initialState = {
-  token: "",
   user: {},
 };
 const AuthContext = React.createContext({
   authContext: initialState,
-  setToken: () => {},
   setUser: () => {},
 });
 
 export const AuthProvider = (props) => {
   const [authContext, dispatch] = useReducer(authReducer, initialState);
 
-  const setToken = (token) => {
-    dispatch({
-      type: SET_TOKEN,
-      payload: { token },
-    });
-  };
   const setUser = (user) => {
     dispatch({
       type: SET_USER,
@@ -50,7 +35,6 @@ export const AuthProvider = (props) => {
     <AuthContext.Provider
       value={{
         authContext: authContext,
-        setToken,
         setUser,
       }}
     >

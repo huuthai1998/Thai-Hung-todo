@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-import axios from "axios";
+import axiosInstance from "../service/axiosInstance";
 
 import { DatePicker, Select, Input, notification } from "antd";
 import { COLORS, CATEGORY_LIST, PRIORITY_LIST, TAB_STATUS } from "../constant";
@@ -43,11 +43,9 @@ export default function AddTodoModal({ setShowAddTodo }) {
       if (!dataToAdd.content || dataToAdd.content.trim().length <= 0)
         throw new Error("Please enter content of task");
       dataToAdd.content = dataToAdd.content.trim();
-      const { status, data } = await axios.post("/todo/", dataToAdd);
-      if (status === 201) {
-        addTodo(data.data);
-        setShowAddTodo(false);
-      }
+      const { data } = await axiosInstance.post("/todo/", dataToAdd);
+      addTodo(data.data);
+      setShowAddTodo(false);
       notification.info({
         message: data.message,
         placement: "top",

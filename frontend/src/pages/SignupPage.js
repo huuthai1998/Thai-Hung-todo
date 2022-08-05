@@ -1,59 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
-import { useAuthContext } from "../contexts/authStore";
+import Cookies from "js-cookie";
 import { useNavigate } from "react-router";
-import axios from "axios";
 import validator from "validator";
-import InputBox from "../components/InputBox";
+import axiosInstance from "../service/axiosInstance";
+
 import { notification } from "antd";
+import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+
+import InputBox from "../components/InputBox";
+import { useAuthContext } from "../contexts/authStore";
 
 export default function SignupPage() {
   const [info, setInfo] = useState({});
-  const { setToken, authContext } = useAuthContext();
   const navigate = useNavigate();
+  const { setUser } = useAuthContext();
+
+  const fetchUserInfo = async () => {
+    try {
+      const { data } = await axiosInstance.get("/user");
+      setUser(data.user);
+    } catch (err) {
+      console.log(err?.response?.data?.message);
+    }
+  };
+
   const onChangeHandler = (e) => {
     const { name, value } = e.currentTarget;
     setInfo({ ...info, [name]: value });
   };
 
   useEffect(() => {
-    if (authContext.token.length > 0) navigate("/");
+    if (Cookies.get("token")?.length > 0) navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authContext.token]);
+  }, []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (!info.email) {
-      notification.error({
-        message: "Email can't be empty",
-        placement: "top",
-      });
-      return;
-    }
-    if (!validator.isEmail(info.email)) {
-      notification.error({
-        message: "Invalid email",
-        placement: "top",
-      });
-      return;
-    }
-    if (!info.password) {
-      notification.error({
-        message: "Password can't be empty",
-        placement: "top",
-      });
-      return;
-    }
     try {
+      if (!info.email) throw new Error("Email can't be empty");
+      if (!validator.isEmail(info.email)) throw new Error("Invalid email");
+      if (!info.password) throw new Error("Password can't be empty");
       if (info.confirmPassword !== info.password)
-        throw Error(`Passwords don't match`);
-      const { data } = await axios.post("/user/signup", {
+        throw new Error("Passwords don't match");
+      const { data } = await axiosInstance.post("/user/signup", {
         email: info.email,
         password: info.password,
         username: info.username,
       });
-      setToken(data.token);
-      axios.defaults.headers.common.authorization = `Bearer ${data.token}`;
+      Cookies.set("token", data.token);
+      await fetchUserInfo();
       navigate("/");
     } catch (err) {
       notification.error({
